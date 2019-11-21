@@ -3,6 +3,7 @@ package br.com.hbsis.usuario;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class UsuarioService {
 
 	private final IUsuarioRepository iUsuarioRepository;
 
+	@Autowired
 	public UsuarioService(IUsuarioRepository iUsuarioRepository) {
 		this.iUsuarioRepository = iUsuarioRepository;
 	}
