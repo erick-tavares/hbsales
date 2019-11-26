@@ -10,18 +10,19 @@ class Fornecedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_fornecedor", nullable = false)
     private Long id;
     @Column(name = "razao_social", nullable = false, length = 255)
     private String razaoSocial;
-    @Column(name = "cnpj", nullable = false, length = 14)
+    @Column(name = "cnpj_fornecedor", nullable = false, length = 14)
     private String cnpj;
-    @Column(name = "nome", nullable = false, length = 255)
+    @Column(name = "nome_fornecedor", unique = true, nullable = false, length = 255)
     private String nome;
-    @Column(name = "endereco", nullable = false, length = 255)
+    @Column(name = "endereco_fornecedor", nullable = false, length = 255)
     private String endereco;
-    @Column(name = "telefone", nullable = false, length = 255)
+    @Column(name = "telefone_fornecedor", nullable = false, length = 255)
     private String telefone;
-    @Column(name = "email", nullable = false, length = 255)
+    @Column(name = "email_fornecedor", nullable = false, length = 255)
     private String email;
 
     @Override
