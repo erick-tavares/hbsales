@@ -1,24 +1,27 @@
 package br.com.hbsis.categoriaProduto;
 
+import br.com.hbsis.fornecedor.Fornecedor;
+
 public class CategoriaProdutoDTO {
         private Long id;
         private String nome;
-        private String fornecedor;
+        private Fornecedor fornecedorCategoria;
         private int codigo;
 
-        public CategoriaProdutoDTO() {
+
+    public CategoriaProdutoDTO() {
         }
 
-        public CategoriaProdutoDTO(String nome, String fornecedor, int codigo) {
+        public CategoriaProdutoDTO(String nome, Fornecedor fornecedorCategoria, int codigo) {
             this.nome = nome;
-            this.fornecedor = fornecedor;
+            this.fornecedorCategoria = fornecedorCategoria;
             this.codigo = codigo;
         }
 
-        public CategoriaProdutoDTO(Long id, String nome, String fornecedor, int codigo) {
+        public CategoriaProdutoDTO(Long id, String nome, Fornecedor fornecedorCategoria, int codigo) {
             this.id = id;
             this.nome = nome;
-            this.fornecedor = fornecedor;
+            this.fornecedorCategoria = fornecedorCategoria;
             this.codigo = codigo;
         }
 
@@ -26,7 +29,7 @@ public class CategoriaProdutoDTO {
             return new CategoriaProdutoDTO(
                     categoriaProduto.getId(),
                     categoriaProduto.getNome(),
-                    categoriaProduto.getFornecedor(),
+                    categoriaProduto.getFornecedorCategoria(),
                     categoriaProduto.getCodigo()
             );
         }
@@ -36,7 +39,7 @@ public class CategoriaProdutoDTO {
         return "CategoriaProdutoDTO{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", fornecedor='" + fornecedor + '\'' +
+                ", fornecedorCategoria=" + fornecedorCategoria +
                 ", codigo=" + codigo +
                 '}';
     }
@@ -57,12 +60,12 @@ public class CategoriaProdutoDTO {
         this.nome = nome;
     }
 
-    public String getFornecedor() {
-        return fornecedor;
+    public Fornecedor getFornecedorCategoria() {
+        return fornecedorCategoria;
     }
 
-    public void setFornecedor(String fornecedor) {
-        this.fornecedor = fornecedor;
+    public void setFornecedorCategoria(Fornecedor fornecedorCategoria) {
+        this.fornecedorCategoria = fornecedorCategoria;
     }
 
     public int getCodigo() {

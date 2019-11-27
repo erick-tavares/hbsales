@@ -1,5 +1,8 @@
 package br.com.hbsis.categoriaProduto;
 
+
+import br.com.hbsis.fornecedor.Fornecedor;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,13 +11,40 @@ class CategoriaProduto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_categoria_produto", nullable = false)
     private Long id;
     @Column(name = "nome_categoria_produto",  nullable = false, length = 255)
     private String nome;
-    @Column(name = "fornecedor_categoria_produto", nullable = false, length = 255)
-    private String fornecedor;
     @Column(name = "codigo_categoria_produto", nullable = false)
     private int codigo;
+
+    @ManyToOne
+    @JoinColumn(name = "fornecedor_id", referencedColumnName = "id_fornecedor")
+        private Fornecedor fornecedorCategoria;
+
+    public CategoriaProduto(){
+    }
+
+    public CategoriaProduto(String nome, int codigo, Fornecedor fornecedorCategoria) {
+        this.nome = nome;
+        this.codigo = codigo;
+        this.fornecedorCategoria = fornecedorCategoria;
+    }
+
+    public CategoriaProduto(Long id, String nome, int codigo, Fornecedor fornecedorCategoria) {
+        this.id = id;
+        this.nome = nome;
+        this.codigo = codigo;
+        this.fornecedorCategoria = fornecedorCategoria;
+    }
+
+    public Fornecedor getFornecedorCategoria() {
+        return fornecedorCategoria;
+    }
+
+    public void setFornecedorCategoria(Fornecedor fornecedorCategoria) {
+        this.fornecedorCategoria = fornecedorCategoria;
+    }
 
     public Long getId() {
         return id;
@@ -32,13 +62,6 @@ class CategoriaProduto {
         this.nome = nome;
     }
 
-    public String getFornecedor() {
-        return fornecedor;
-    }
-
-    public void setFornecedor(String fornecedor) {
-        this.fornecedor = fornecedor;
-    }
 
     public int getCodigo() {
         return codigo;
@@ -53,8 +76,8 @@ class CategoriaProduto {
         return "CategoriaProduto{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", fornecedor='" + fornecedor + '\'' +
                 ", codigo=" + codigo +
+                ", fornecedorCategoria=" + fornecedorCategoria +
                 '}';
     }
 }
