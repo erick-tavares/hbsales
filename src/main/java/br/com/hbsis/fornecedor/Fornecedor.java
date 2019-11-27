@@ -1,12 +1,12 @@
 package br.com.hbsis.fornecedor;
 
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "fornecedor")
-
+public
 class Fornecedor {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,28 @@ class Fornecedor {
     private String telefone;
     @Column(name = "email_fornecedor", nullable = false, length = 255)
     private String email;
+
+    public Fornecedor() {
+    }
+
+    public Fornecedor(String razaoSocial, String cnpj, String nome, String endereco, String telefone, String email) {
+        this.razaoSocial = razaoSocial;
+        this.cnpj = cnpj;
+        this.nome = nome;
+        this.endereco = endereco;
+        this.telefone = telefone;
+        this.email = email;
+    }
+
+    public Fornecedor(Long id, String razaoSocial, String cnpj, String nome, String endereco, String telefone, String email) {
+        this.id = id;
+        this.razaoSocial = razaoSocial;
+        this.cnpj = cnpj;
+        this.nome = nome;
+        this.endereco = endereco;
+        this.telefone = telefone;
+        this.email = email;
+    }
 
     @Override
     public String toString() {
