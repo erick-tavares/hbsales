@@ -5,6 +5,7 @@ import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.ParseLong;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -109,6 +110,8 @@ public class CategoriaProdutoService {
         }
     }
      */
+
+    ///////
     public List<CategoriaProduto> listarCategoria() {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
         return categoriaProduto;
