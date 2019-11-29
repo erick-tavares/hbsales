@@ -6,7 +6,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.supercsv.cellprocessor.ParseLong;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanReader;
+import org.supercsv.io.ICsvBeanReader;
+import org.supercsv.prefs.CsvPreference;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +27,7 @@ public class CategoriaProdutoService {
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final FornecedorService fornecedorService;
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService ) {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) throws IOException {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
     }
@@ -59,12 +68,54 @@ public class CategoriaProdutoService {
         }
 
     }
-////
+
+    /*
+    public static void readCSVFile (String csvFileName){
+        ICsvBeanReader beanReader = null;
+    CellProcessor[] processors = new CellProcessor[]{
+            new NotNull(new ParseLong()), // id
+            new NotNull(), // nome
+            new NotNull(), // codigo
+            new NotNull(), // fornecedorCategoria
+            //       new ParseDate("MM/dd/yyyy"), // published date
+            //     new ParseDouble() // price
+    };
+
+        try {
+            beanReader = new CsvBeanReader(new FileReader(csvFileName), CsvPreference.STANDARD_PREFERENCE);
+            String[] header = beanReader.getHeader(true);
+            CategoriaProduto categoriaProdutoBean = null;
+
+            while((categoriaProdutoBean =beanReader.read(CategoriaProduto .class,header,processors))!=null)
+            {
+                System.out.printf("%s %-30s %-30s %-20s",
+                        categoriaProdutoBean.getId(),
+                        categoriaProdutoBean.getNome(),
+                        categoriaProdutoBean.getCodigo(),
+                        categoriaProdutoBean.getFornecedorCategoria());
+            }
+        } catch (FileNotFoundException ex) {
+            System.err.println("Could not find the CSV file: " + ex);
+        } catch (IOException ex) {
+            System.err.println("Error reading the CSV file: " + ex);
+        } finally {
+            if (beanReader != null) {
+                try {
+                    beanReader.close();
+                } catch (IOException ex) {
+                    System.err.println("Error closing the reader: " + ex);
+                }
+            }
+        }
+    }
+     */
     public List<CategoriaProduto> listarCategoria() {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
         return categoriaProduto;
     }
-////
+
+
+    ////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
