@@ -2,10 +2,12 @@ package br.com.hbsis.categoriaProduto;
 
 
 import br.com.hbsis.fornecedor.Fornecedor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.persistence.*;
 
 @Entity
+@ConfigurationProperties(prefix = "file") ///
 @Table(name = "categoria_produto")
 public class CategoriaProduto {
 
@@ -21,7 +23,16 @@ public class CategoriaProduto {
     @ManyToOne
     @JoinColumn(name = "fornecedor_id", referencedColumnName = "id_fornecedor")
         private Fornecedor fornecedorCategoria;
+///
+        private String uploadDir;
+        public String getUploadDir() {
+            return uploadDir;
+        }
+        public void setUploadDir(String uploadDir) {
+            this.uploadDir = uploadDir;
+        }
 
+    ///
     public CategoriaProduto(){
     }
 
