@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,8 +59,12 @@ public class CategoriaProdutoService {
         }
 
     }
-
-
+////
+    public List<CategoriaProduto> listarCategoria() {
+        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
+        return categoriaProduto;
+    }
+////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
