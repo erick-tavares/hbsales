@@ -10,41 +10,21 @@ class Fornecedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_fornecedor", nullable = false)
     private Long id;
     @Column(name = "razao_social", nullable = false, length = 255)
     private String razaoSocial;
-    @Column(name = "cnpj_fornecedor", nullable = false, length = 14)
+    @Column(name = "cnpj", nullable = false, length = 14)
     private String cnpj;
-    @Column(name = "nome_fornecedor", unique = true, nullable = false, length = 255)
+    @Column(name = "nome", unique = true, nullable = false, length = 255)
     private String nome;
-    @Column(name = "endereco_fornecedor", nullable = false, length = 255)
+    @Column(name = "endereco", nullable = false, length = 255)
     private String endereco;
-    @Column(name = "telefone_fornecedor", nullable = false, length = 255)
+    @Column(name = "telefone", nullable = false, length = 255)
     private String telefone;
-    @Column(name = "email_fornecedor", nullable = false, length = 255)
+    @Column(name = "email", nullable = false, length = 255)
     private String email;
 
     public Fornecedor() {
-    }
-
-    public Fornecedor(String razaoSocial, String cnpj, String nome, String endereco, String telefone, String email) {
-        this.razaoSocial = razaoSocial;
-        this.cnpj = cnpj;
-        this.nome = nome;
-        this.endereco = endereco;
-        this.telefone = telefone;
-        this.email = email;
-    }
-
-    public Fornecedor(Long id, String razaoSocial, String cnpj, String nome, String endereco, String telefone, String email) {
-        this.id = id;
-        this.razaoSocial = razaoSocial;
-        this.cnpj = cnpj;
-        this.nome = nome;
-        this.endereco = endereco;
-        this.telefone = telefone;
-        this.email = email;
     }
 
     @Override
