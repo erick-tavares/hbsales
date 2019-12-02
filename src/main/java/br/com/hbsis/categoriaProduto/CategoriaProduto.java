@@ -2,59 +2,35 @@ package br.com.hbsis.categoriaProduto;
 
 
 import br.com.hbsis.fornecedor.Fornecedor;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.persistence.*;
 
 @Entity
-@ConfigurationProperties(prefix = "file") ///
 @Table(name = "categoria_produto")
 public class CategoriaProduto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_categoria_produto", nullable = false)
     private Long id;
-    @Column(name = "nome_categoria_produto",  nullable = false, length = 255)
+    @Column(name = "nome", nullable = false, length = 255)
     private String nome;
-    @Column(name = "codigo_categoria_produto", nullable = false)
+    @Column(name = "codigo", nullable = false)
     private int codigo;
 
     @ManyToOne
-    @JoinColumn(name = "fornecedor_id", referencedColumnName = "id_fornecedor")
-        private Fornecedor fornecedorCategoria;
-///
-        private String uploadDir;
-        public String getUploadDir() {
-            return uploadDir;
-        }
-        public void setUploadDir(String uploadDir) {
-            this.uploadDir = uploadDir;
-        }
+    @JoinColumn(name = "fornecedor_id", referencedColumnName = "id")
+    private Fornecedor fornecedorId;
 
-    ///
-    public CategoriaProduto(){
+
+    public CategoriaProduto() {
     }
 
-    public CategoriaProduto(String nome, int codigo, Fornecedor fornecedorCategoria) {
-        this.nome = nome;
-        this.codigo = codigo;
-        this.fornecedorCategoria = fornecedorCategoria;
+    public Fornecedor getFornecedorId() {
+        return fornecedorId;
     }
 
-    public CategoriaProduto(Long id, String nome, int codigo, Fornecedor fornecedorCategoria) {
-        this.id = id;
-        this.nome = nome;
-        this.codigo = codigo;
-        this.fornecedorCategoria = fornecedorCategoria;
-    }
-
-    public Fornecedor getFornecedorCategoria() {
-        return fornecedorCategoria;
-    }
-
-    public void setFornecedorCategoria(Fornecedor fornecedorCategoria) {
-        this.fornecedorCategoria = fornecedorCategoria;
+    public void setFornecedorId(Fornecedor fornecedorId) {
+        this.fornecedorId = fornecedorId;
     }
 
     public Long getId() {
@@ -88,7 +64,7 @@ public class CategoriaProduto {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", codigo=" + codigo +
-                ", fornecedorCategoria=" + fornecedorCategoria +
+                ", fornecedorId=" + fornecedorId +
                 '}';
     }
 }
