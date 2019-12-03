@@ -1,7 +1,7 @@
 package br.com.hbsis.usuario;
 
 import javax.persistence.*;
-
+//
 /**
  * Classe responsável pelo mapeamento da entidade do banco de dados
  */
