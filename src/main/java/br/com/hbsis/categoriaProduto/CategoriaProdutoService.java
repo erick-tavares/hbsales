@@ -1,16 +1,18 @@
 package br.com.hbsis.categoriaProduto;
 
+import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ public class CategoriaProdutoService {
     private final FornecedorService fornecedorService;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) throws IOException {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService){
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
 
@@ -39,8 +41,8 @@ public class CategoriaProdutoService {
 
         CategoriaProduto categoriaProduto = new CategoriaProduto();
         categoriaProduto.setNome(categoriaProdutoDTO.getNome());
-        categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
         categoriaProduto.setCodigo(categoriaProdutoDTO.getCodigo());
+        categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
         categoriaProduto = this.iCategoriaProdutoRepository.save(categoriaProduto);
 
@@ -87,6 +89,35 @@ public class CategoriaProdutoService {
         return csvWriter.toString();
     }
 
+    ///Import CSV
+    public void importCSV (MultipartFile importCategoria){
+        String linhaDoArquivo = "";
+        String valorEntreVirgula = ";";
+
+        try(BufferedReader leitor = new BufferedReader( new InputStreamReader(importCategoria.getInputStream()))){
+
+            linhaDoArquivo = leitor.readLine();
+            while ( (linhaDoArquivo = leitor.readLine()) != null ){
+                String [] categoriaCSV = linhaDoArquivo.split(valorEntreVirgula);
+                Optional<Fornecedor> fornecedorOptional = fornecedorService.findByIdOptional(Long.parseLong(categoriaCSV[3]));
+
+                if (fornecedorOptional.isPresent()){
+                    CategoriaProduto categoriaProduto = new CategoriaProduto();
+                    categoriaProduto.setNome(categoriaCSV[1]);
+                    categoriaProduto.setCodigo(Integer.parseInt(categoriaCSV[2]));
+                    categoriaProduto.setFornecedorId(fornecedorOptional.get());
+
+                    this.iCategoriaProdutoRepository.save(categoriaProduto);
+                }else{
+                    throw new IllegalArgumentException(String.format("Id %s não existe", fornecedorOptional));
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+/////////////////////////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
@@ -109,8 +140,8 @@ public class CategoriaProdutoService {
             LOGGER.debug("Categoria Existente: {}", categoriaProdutoExistente);
 
             categoriaProdutoExistente.setNome(categoriaProdutoDTO.getNome());
-            categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
             categoriaProdutoExistente.setCodigo(categoriaProdutoDTO.getCodigo());
+            categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
             categoriaProdutoExistente = this.iCategoriaProdutoRepository.save(categoriaProdutoExistente);
 
