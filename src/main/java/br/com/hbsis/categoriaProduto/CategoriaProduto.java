@@ -25,7 +25,11 @@ public class CategoriaProduto {
     public CategoriaProduto() {
     }
 
-    public Fornecedor getFornecedorId() {
+    public Long getFornecedorId() {
+        return fornecedorId.getId();
+    }
+
+    public Fornecedor getFornecedorObj() {
         return fornecedorId;
     }
 

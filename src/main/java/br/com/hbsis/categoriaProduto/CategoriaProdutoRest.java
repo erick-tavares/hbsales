@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,7 +38,14 @@ public class CategoriaProdutoRest {
         return this.categoriaProdutoService.findById(id);
     }
 
-    // Exportando CSV, setando filename e conteúdo
+    //Importando CSV
+    @PostMapping (value = "/import-categorias", consumes = "multipart/form-data")
+    public void importCSV (@RequestParam("file") MultipartFile importCategoria)throws IOException{
+        this.categoriaProdutoService.importCSV(importCategoria);
+    }
+
+
+    // Exportando CSV
     @RequestMapping("/export-categorias")
     public void exportCSV(HttpServletResponse response)throws IOException {
         LOGGER.info("Exportando CSV");
