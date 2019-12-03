@@ -1,6 +1,5 @@
 package br.com.hbsis.categoriaProduto;
 
-import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -22,12 +21,12 @@ public class CategoriaProdutoService {
 
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final FornecedorService fornecedorService;
-    
+
 
     public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) throws IOException {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
-        
+
     }
 
     public CategoriaProdutoDTO save(CategoriaProdutoDTO categoriaProdutoDTO) {
@@ -58,11 +57,15 @@ public class CategoriaProdutoService {
         if (StringUtils.isEmpty(categoriaProdutoDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nula/vazia");
         }
+    }
 
+    public List<CategoriaProduto> listarCategoria() {
+        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
+        return categoriaProduto;
     }
 
     ////// Exportando CSV, setando filename e conteúdo
-    public void exportCSV(HttpServletResponse response) throws IOException {
+    public String exportCSV(HttpServletResponse response) throws IOException {
         String categoriaProdutoCSV = "categoriaProduto.csv";
         response.setContentType("text/csv");
 
@@ -70,27 +73,20 @@ public class CategoriaProdutoService {
         String headerValue = String.format("attachment; filename=\"%s\"", categoriaProdutoCSV);
         response.setHeader(headerKey, headerValue);
 
-        List<CategoriaProduto> listaDeCategoria = categoriaProdutoService.listarCategoria();
-
         ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
-                CsvPreference.STANDARD_PREFERENCE);
+                CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
         String[] header = {"id", "nome", "codigo", "fornecedorId"};
         csvWriter.writeHeader(header);
 
-        for (CategoriaProduto categoriaCSVObjeto : listaDeCategoria) {
+        for (CategoriaProduto categoriaCSVObjeto : listarCategoria()) {
             csvWriter.write(categoriaCSVObjeto, header);
         }
         csvWriter.close();
+
+        return csvWriter.toString();
     }
 
-    ///////
-    public List<CategoriaProduto> listarCategoria() {
-        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
-        return categoriaProduto;
-    }
-
-    ////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
@@ -106,8 +102,6 @@ public class CategoriaProdutoService {
 
         if (categoriProdutoExistenteOptional.isPresent()) {
 
-            Fornecedor fornecedorDaCategoria = fornecedorService.findFornecedorById(categoriaProdutoDTO.getId()); ////
-
             CategoriaProduto categoriaProdutoExistente = categoriProdutoExistenteOptional.get();
 
             LOGGER.info("Atualizando categoria... id: [{}]", categoriaProdutoExistente.getId());
@@ -115,7 +109,7 @@ public class CategoriaProdutoService {
             LOGGER.debug("Categoria Existente: {}", categoriaProdutoExistente);
 
             categoriaProdutoExistente.setNome(categoriaProdutoDTO.getNome());
-            categoriaProdutoExistente.setFornecedorId(fornecedorDaCategoria);
+            categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
             categoriaProdutoExistente.setCodigo(categoriaProdutoDTO.getCodigo());
 
             categoriaProdutoExistente = this.iCategoriaProdutoRepository.save(categoriaProdutoExistente);

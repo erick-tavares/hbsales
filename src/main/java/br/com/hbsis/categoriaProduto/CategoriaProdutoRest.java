@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 @RestController
@@ -38,10 +39,10 @@ public class CategoriaProdutoRest {
 
     // Exportando CSV, setando filename e conteúdo
     @RequestMapping("/export-categorias")
-    public void exportCSV(HttpServletResponse response) {
+    public void exportCSV(HttpServletResponse response)throws IOException {
         LOGGER.info("Exportando CSV");
 
-        return this.categoriaProdutoService.exportCSV();
+        this.categoriaProdutoService.exportCSV(response);
     }
 
     @PutMapping("/{id}")
