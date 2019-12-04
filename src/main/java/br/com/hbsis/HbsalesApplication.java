@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-//@EnableConfigurationProperties (CategoriaProduto.class)
 public class HbsalesApplication {
 
 	public static void main(String[] args) {
