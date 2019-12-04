@@ -1,10 +1,20 @@
 package br.com.hbsis.linhacategoria;
 
+import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,5 +106,57 @@ public class LinhaCategoriaService {
         LOGGER.info("Executando delete para linha da categoria de ID: [{}]", id);
 
         this.iLinhaCategoriaRepository.deleteById(id);
+    }
+
+    ////// Exportando CSV
+    public String exportCSV(HttpServletResponse response) throws IOException {
+        String linhaCategoriaCSV = "linhaCategoria.csv";
+        response.setContentType("text/csv");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", linhaCategoriaCSV);
+        response.setHeader(headerKey, headerValue);
+
+        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
+                CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+
+        String[] header = {"id", "codigo","nome", "categoriaId"};
+        csvWriter.writeHeader(header);
+
+        for (LinhaCategoria linhaCategoriaCSVObjeto : listarLinhaCategoria()) {
+            csvWriter.write(linhaCategoriaCSVObjeto, header);
+        }
+        csvWriter.close();
+
+        return csvWriter.toString();
+    }
+
+    ///Import CSV
+    public void importCSV(MultipartFile importLinhaCategoria) {
+        String linhaDoArquivo = "";
+        String quebraDeLinha = ";";
+
+        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importLinhaCategoria.getInputStream()))) {
+
+            linhaDoArquivo = leitor.readLine();
+            while ((linhaDoArquivo = leitor.readLine()) != null) {
+                String[] linhaCategoriaCSV = linhaDoArquivo.split(quebraDeLinha);
+                Optional<CategoriaProduto> categoriaProdutoOptional = categoriaProdutoService.findByIdOptional(Long.parseLong(linhaCategoriaCSV[3]));
+
+                if (categoriaProdutoOptional.isPresent()) {
+                    LinhaCategoria linhaCategoria = new LinhaCategoria();
+                    linhaCategoria.setCodigo(Integer.parseInt(linhaCategoriaCSV[1]));
+                    linhaCategoria.setNome(linhaCategoriaCSV[2]);
+                    linhaCategoria.setCategoriaId(categoriaProdutoOptional.get());
+
+                    this.iLinhaCategoriaRepository.save(linhaCategoria);
+                } else {
+                    throw new IllegalArgumentException(String.format("Id %s não existe", categoriaProdutoOptional));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -117,7 +117,6 @@ public class CategoriaProdutoService {
         }
 
     }
-
     /////////////////////////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
@@ -134,6 +133,16 @@ public class CategoriaProdutoService {
 
         if (categoriaProdutoOptional.isPresent()) {
             return categoriaProdutoOptional.get();
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
+    public Optional <CategoriaProduto> findByIdOptional(Long id) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
+
+        if (categoriaProdutoOptional.isPresent()) {
+            return categoriaProdutoOptional;
         }
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
