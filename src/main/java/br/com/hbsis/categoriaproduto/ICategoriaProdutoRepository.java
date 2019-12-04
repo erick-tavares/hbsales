@@ -1,4 +1,4 @@
-package br.com.hbsis.categoriaProduto;
+package br.com.hbsis.categoriaproduto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

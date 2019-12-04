@@ -1,4 +1,4 @@
-package br.com.hbsis.categoriaProduto;
+package br.com.hbsis.categoriaproduto;
 
 
 import br.com.hbsis.fornecedor.Fornecedor;
@@ -27,10 +27,6 @@ public class CategoriaProduto {
 
     public Long getFornecedorId() {
         return fornecedorId.getId();
-    }
-
-    public Fornecedor getFornecedorObj() {
-        return fornecedorId;
     }
 
     public void setFornecedorId(Fornecedor fornecedorId) {
