@@ -1,4 +1,4 @@
-package br.com.hbsis.categoriaProduto;
+package br.com.hbsis.categoriaproduto;
 
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
@@ -25,7 +25,7 @@ public class CategoriaProdutoService {
     private final FornecedorService fornecedorService;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService){
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
 
@@ -90,39 +90,50 @@ public class CategoriaProdutoService {
     }
 
     ///Import CSV
-    public void importCSV (MultipartFile importCategoria){
+    public void importCSV(MultipartFile importCategoria) {
         String linhaDoArquivo = "";
-        String valorEntreVirgula = ";";
+        String quebraDeLinha = ";";
 
-        try(BufferedReader leitor = new BufferedReader( new InputStreamReader(importCategoria.getInputStream()))){
+        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importCategoria.getInputStream()))) {
 
             linhaDoArquivo = leitor.readLine();
-            while ( (linhaDoArquivo = leitor.readLine()) != null ){
-                String [] categoriaCSV = linhaDoArquivo.split(valorEntreVirgula);
+            while ((linhaDoArquivo = leitor.readLine()) != null) {
+                String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
                 Optional<Fornecedor> fornecedorOptional = fornecedorService.findByIdOptional(Long.parseLong(categoriaCSV[3]));
 
-                if (fornecedorOptional.isPresent()){
+                if (fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
                     categoriaProduto.setNome(categoriaCSV[1]);
                     categoriaProduto.setCodigo(Integer.parseInt(categoriaCSV[2]));
                     categoriaProduto.setFornecedorId(fornecedorOptional.get());
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
-                }else{
+                } else {
                     throw new IllegalArgumentException(String.format("Id %s não existe", fornecedorOptional));
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-/////////////////////////
+
+    /////////////////////////
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
         if (categoriaProdutoOptional.isPresent()) {
             return CategoriaProdutoDTO.of(categoriaProdutoOptional.get());
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
+    public CategoriaProduto findCategoriProdutoById(Long id) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
+
+        if (categoriaProdutoOptional.isPresent()) {
+            return categoriaProdutoOptional.get();
         }
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));

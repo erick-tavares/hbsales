@@ -1,12 +1,9 @@
-package br.com.hbsis.categoriaProduto;
+package br.com.hbsis.categoriaproduto;
 
-
-import br.com.hbsis.fornecedor.Fornecedor;
 
 public class CategoriaProdutoDTO {
     private Long id;
     private String nome;
-    private Fornecedor fornecedorObj;
     private Long fornecedorId;
     private int codigo;
 
