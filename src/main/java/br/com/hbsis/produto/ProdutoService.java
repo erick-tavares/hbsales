@@ -173,4 +173,40 @@ public class ProdutoService {
         }
 
     }
+
+    /*
+    ///Import CSV por Fornecedor
+    public void importPorFornecedorCSV(MultipartFile importProdutoFornecedor) {
+        String linhaDoArquivo = "";
+        String quebraDeLinha = ";";
+
+        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importProdutoFornecedor.getInputStream()))) {
+
+            linhaDoArquivo = leitor.readLine();
+            while ((linhaDoArquivo = leitor.readLine()) != null) {
+                String[] produtoFornecedorCSV = linhaDoArquivo.split(quebraDeLinha);
+                Optional<LinhaCategoria> linhaCategoriaOptional = linhaCategoriaService.findByIdOptional(Long.parseLong(produtoCSV[7]));
+
+                if (linhaCategoriaOptional.isPresent()) {
+                    Produto produto = new Produto();
+                    produto.setCodigo(Integer.parseInt(produtoCSV[1]));
+                    produto.setNome(produtoCSV[2]);
+                    produto.setPreco(Double.parseDouble(produtoCSV[3]));
+                    produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[4]));
+                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[5]));
+                    produto.setValidade(LocalDateTime.parse(produtoCSV[6]));
+                    produto.setLinhaCategoriaId(linhaCategoriaOptional.get());
+
+                    this.iProdutoRepository.save(produto);
+                } else {
+                    throw new IllegalArgumentException(String.format("Id %s não existe", linhaCategoriaOptional));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    */
+
 }
