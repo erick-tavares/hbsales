@@ -1,4 +1,4 @@
-create table produtos(
+create table produto(
 
 id bigint identity (1,1) primary key not null,
 codigo int not null,

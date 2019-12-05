@@ -1,1 +1,0 @@
-alter table categoria_produto add constraint nome_fornecedor_id unique (nome,fornecedor_id);
