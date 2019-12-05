@@ -1,4 +1,4 @@
-@echo off
+                                             @echo off
 
 set NAME=%1%
 if "%NAME%"=="" (
