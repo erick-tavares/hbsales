@@ -19,10 +19,10 @@ public class UsuarioDTO {
 	}
 
 	public UsuarioDTO(Long id, String senha, String login, String uuid) {
-		this.id = id;
-		this.senha = senha;
-		this.login = login;
-		this.uuid = uuid;
+			this.id = id;
+			this.senha = senha;
+			this.login = login;
+			this.uuid = uuid;
 	}
 
 	public static UsuarioDTO of(Usuario usuario) {
