@@ -28,8 +28,8 @@ public class LinhaCategoriaService {
 
 
     public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService) {
-        this.categoriaProdutoService = categoriaProdutoService;
         this.iLinhaCategoriaRepository = iLinhaCategoriaRepository;
+        this.categoriaProdutoService = categoriaProdutoService;
 
     }
 
@@ -45,7 +45,7 @@ public class LinhaCategoriaService {
         linhaCategoria.setCodigo(linhaCategoriaDTO.getCodigo());
         linhaCategoria.setNome(linhaCategoriaDTO.getNome());
 
-        linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriProdutoById(linhaCategoriaDTO.getCategoriaId()));
+        linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(linhaCategoriaDTO.getCategoriaId()));
 
         linhaCategoria = this.iLinhaCategoriaRepository.save(linhaCategoria);
 
@@ -69,6 +69,16 @@ public class LinhaCategoriaService {
         return linhaCategoria;
     }
 
+    public Optional<LinhaCategoria> findByIdOptional(Long id) {
+        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
+
+        if (linhaCategoriaOptional.isPresent()) {
+            return linhaCategoriaOptional;
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
     public LinhaCategoriaDTO findById(Long id) {
         Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
 
@@ -79,12 +89,22 @@ public class LinhaCategoriaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+    public LinhaCategoria findLinhaCategoriaById(Long id) {
+        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
+
+        if (linhaCategoriaOptional.isPresent()) {
+            return linhaCategoriaOptional.get();
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
     public LinhaCategoriaDTO update(LinhaCategoriaDTO linhaCategoriaDTO, Long id) {
-        Optional<LinhaCategoria> linhaCategoriExistenteOptional = this.iLinhaCategoriaRepository.findById(id);
+        Optional<LinhaCategoria> linhaCategoriaExistenteOptional = this.iLinhaCategoriaRepository.findById(id);
 
-        if (linhaCategoriExistenteOptional.isPresent()) {
+        if (linhaCategoriaExistenteOptional.isPresent()) {
 
-            LinhaCategoria linhaCategoriaExistente = linhaCategoriExistenteOptional.get();
+            LinhaCategoria linhaCategoriaExistente = linhaCategoriaExistenteOptional.get();
 
             LOGGER.info("Atualizando linha da categoria... id: [{}]", linhaCategoriaExistente.getId());
             LOGGER.debug("Payload: {}", linhaCategoriaDTO);
@@ -92,7 +112,7 @@ public class LinhaCategoriaService {
 
             linhaCategoriaExistente.setNome(linhaCategoriaDTO.getNome());
             linhaCategoriaExistente.setCodigo(linhaCategoriaDTO.getCodigo());
-            linhaCategoriaExistente.setCategoriaId(categoriaProdutoService.findCategoriProdutoById(linhaCategoriaDTO.getCategoriaId()));
+            linhaCategoriaExistente.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(linhaCategoriaDTO.getCategoriaId()));
 
             linhaCategoriaExistente = this.iLinhaCategoriaRepository.save(linhaCategoriaExistente);
 
