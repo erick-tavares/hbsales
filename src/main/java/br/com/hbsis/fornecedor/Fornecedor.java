@@ -1,11 +1,7 @@
 package br.com.hbsis.fornecedor;
 
 
-import org.hibernate.validator.constraints.br.CNPJ;
-
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "fornecedor")
