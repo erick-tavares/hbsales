@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
@@ -23,7 +22,7 @@ public class ProdutoRest {
     }
 
     @PostMapping
-    public ProdutoDTO save(@Valid @RequestBody ProdutoDTO produtoDTO) {
+    public ProdutoDTO save( @RequestBody ProdutoDTO produtoDTO) {
         LOGGER.info("Recebendo solicitação de persistência de produto...");
         LOGGER.debug("Payaload: {}", produtoDTO);
 

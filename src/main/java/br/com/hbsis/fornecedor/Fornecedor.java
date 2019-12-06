@@ -1,7 +1,11 @@
 package br.com.hbsis.fornecedor;
 
 
+import org.hibernate.validator.constraints.br.CNPJ;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "fornecedor")
@@ -10,7 +14,6 @@ class Fornecedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, insertable = false)
     private Long id;
     @Column(name = "razao_social", nullable = false, length = 100)
     private String razaoSocial;

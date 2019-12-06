@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
@@ -31,7 +30,7 @@ public class LinhaCategoriaRest {
     }
 
     @GetMapping("/{id}")
-    public LinhaCategoriaDTO find(@Valid @PathVariable("id") Long id) {
+    public LinhaCategoriaDTO find( @PathVariable("id") Long id) {
 
         LOGGER.info("Recebendo find by ID... id: [{}]", id);
 

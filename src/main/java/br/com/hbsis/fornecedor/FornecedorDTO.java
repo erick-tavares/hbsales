@@ -1,18 +1,27 @@
 package br.com.hbsis.fornecedor;
 
-import javax.validation.constraints.Pattern;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class FornecedorDTO {
 
 
     private Long id;
+    @NotBlank(message = "razaoSocial é obrigatório")
     private String razaoSocial;
-    @CnpjValidation(length = 14, message = "Deve conter somente números e exatamente 14 caracteres")
+    @NotBlank(message = "cnpj é obrigatório")
+    @Size(min = 14, max = 14)
     private String cnpj;
+    @NotBlank(message = "nome é obrigatório")
     private String nome;
+    @NotBlank(message = "endereco é obrigatório")
     private String endereco;
-    @Pattern(regexp = "\\d{12}", message = "Telefone de contato deve ter 12 caracteres numéricos")
+    @NotBlank(message = "telefone é obrigatório")
     private String telefone;
+    @NotBlank(message = "email é obrigatório")
+    @Email
     private String email;
 
 
