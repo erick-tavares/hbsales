@@ -8,3 +8,9 @@ CREATE TABLE categoria_produto(
 
       CONSTRAINT fk_categoria_fornecedor FOREIGN KEY (fornecedor_id) REFERENCES fornecedor (id)
   );
+
+
+  codigo varchar (10) unique not null,
+  nome varchar (50) not null,
+
+

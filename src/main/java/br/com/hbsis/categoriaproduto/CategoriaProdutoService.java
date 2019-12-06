@@ -1,6 +1,7 @@
 package br.com.hbsis.categoriaproduto;
 
 import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,31 @@ public class CategoriaProdutoService {
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
 
     }
+
+    ////Metodo para consturir o codigo da categoria
+    public String codigoCategoria (String codigoDoUsuario, Long idFornecedor){
+
+        Fornecedor fornecedor = fornecedorExistenteOptional.get();
+
+        fornecedor.getFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
+
+
+        FornecedorDTO fornecedorDTO =
+
+
+                fornecedorDTO.getCnpj().substring(6,10);
+
+
+        codigoCategoria = ("CAT" + idFornecedor + codigoDoUsuario);
+
+        return codigoCategoria();
+
+    }
+
+
+
+
+
 
     public CategoriaProdutoDTO save(CategoriaProdutoDTO categoriaProdutoDTO) {
 
@@ -115,7 +141,6 @@ public class CategoriaProdutoService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
     /////////////////////////
     public Optional <CategoriaProduto> findByIdOptional(Long id) {

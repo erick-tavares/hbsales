@@ -1,10 +1,17 @@
 package br.com.hbsis.categoriaproduto;
 
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class CategoriaProdutoDTO {
     private Long id;
+    @NotBlank(message = "nome é obrigatório")
     private String nome;
+    @NotBlank(message = "fornecedorId é obrigatório")
     private Long fornecedorId;
+    @NotBlank(message = "codigo é obrigatório")
+    @Size(min = 10, max = 10)
     private int codigo;
 
 
