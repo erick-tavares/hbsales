@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * Classe resposável por receber as requisições externas ao sistema
  */
@@ -21,7 +23,7 @@ public class UsuarioRest {
 	}
 
 	@PostMapping
-	public UsuarioDTO save(@RequestBody UsuarioDTO usuarioDTO) {
+	public UsuarioDTO save(@Valid @RequestBody UsuarioDTO usuarioDTO) {
 		LOGGER.info("Recebendo solicitação de persistência de usuário...");
 		LOGGER.debug("Payaload: {}", usuarioDTO);
 

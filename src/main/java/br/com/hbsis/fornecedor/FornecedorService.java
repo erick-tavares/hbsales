@@ -3,8 +3,10 @@ package br.com.hbsis.fornecedor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -14,18 +16,28 @@ public class FornecedorService {
 
     private final IFornecedorRepository iFornecedorRepository;
 
+    @Autowired
     public FornecedorService(IFornecedorRepository iFornecedorRepository) {
         this.iFornecedorRepository = iFornecedorRepository;
     }
 
     public FornecedorDTO save(FornecedorDTO fornecedorDTO) {
 
-        this.validate(fornecedorDTO);
+        return FornecedorDTO.of(this.saveEntity(fornecedorDTO));
+    }
+        Fornecedor saveEntity(FornecedorDTO fornecedorDTO) {
+            LOGGER.info("Salvando fornecedor");
+            LOGGER.debug("Fornecedor: {}", fornecedorDTO);
 
-        LOGGER.info("Salvando fornecedor");
-        LOGGER.debug("Fornecedor: {}", fornecedorDTO);
+            Fornecedor fornecedor = this.fromDto(fornecedorDTO, new Fornecedor());
+            fornecedor = this.iFornecedorRepository.save(fornecedor);
+            LOGGER.trace("Fornecedor salvo {}", fornecedor);
 
-        Fornecedor fornecedor = new Fornecedor();
+            return fornecedor;
+        }
+
+        private Fornecedor fromDto (FornecedorDTO fornecedorDTO, Fornecedor fornecedor){
+
         fornecedor.setRazaoSocial(fornecedorDTO.getRazaoSocial());
         fornecedor.setCnpj(fornecedorDTO.getCnpj());
         fornecedor.setNome(fornecedorDTO.getNome());
@@ -33,10 +45,7 @@ public class FornecedorService {
         fornecedor.setTelefone(fornecedorDTO.getTelefone());
         fornecedor.setEmail(fornecedorDTO.getEmail());
 
-
-        fornecedor = this.iFornecedorRepository.save(fornecedor);
-
-        return FornecedorDTO.of(fornecedor);
+        return fornecedor;
     }
 
     private void validate(FornecedorDTO fornecedorDTO) {
@@ -79,14 +88,8 @@ public class FornecedorService {
     }
 
     public FornecedorDTO findById(Long id) {
-        Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
-
-        if (fornecedorOptional.isPresent()) {
-            return FornecedorDTO.of(fornecedorOptional.get());
+            return FornecedorDTO.of(findFornecedorById(id));
         }
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
 
     public Fornecedor findFornecedorById(Long id) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
@@ -95,34 +98,19 @@ public class FornecedorService {
             return fornecedorOptional.get();
         }
 
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+        throw new NoSuchElementException(String.format("ID %s não existe", id));
     }
 
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
-        Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
+        Fornecedor fornecedor = this.findFornecedorById(id);
 
-        if (fornecedorExistenteOptional.isPresent()) {
-            Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
+        LOGGER.debug("Atualizando fornecedor....");
+        LOGGER.debug("Fornecedor atual: {} / Fornecedor novo: {}", fornecedor, fornecedorDTO);
 
-            LOGGER.info("Atualizando fornecedor... id: [{}]", fornecedorExistente.getId());
-            LOGGER.debug("Payload: {}", fornecedorDTO);
-            LOGGER.debug("Fornecedor Existente: {}", fornecedorExistente);
-
-            fornecedorExistente.setRazaoSocial(fornecedorDTO.getRazaoSocial());
-            fornecedorExistente.setCnpj(fornecedorDTO.getCnpj());
-            fornecedorExistente.setNome(fornecedorDTO.getNome());
-            fornecedorExistente.setEndereco(fornecedorDTO.getEndereco());
-            fornecedorExistente.setTelefone(fornecedorDTO.getTelefone());
-            fornecedorExistente.setEmail(fornecedorDTO.getEmail());
-
-            fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
-
-            return FornecedorDTO.of(fornecedorExistente);
+        fornecedor = this.iFornecedorRepository.save(this.fromDto(fornecedorDTO, fornecedor));
+            return FornecedorDTO.of(fornecedor);
         }
 
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
 
     public void delete(Long id) {
         LOGGER.info("Executando delete para fornecedor de ID: [{}]", id);

@@ -1,12 +1,17 @@
 package br.com.hbsis.fornecedor;
 
+import javax.validation.constraints.Pattern;
+
 public class FornecedorDTO {
+
 
     private Long id;
     private String razaoSocial;
+    @CnpjValidation(length = 14, message = "Deve conter somente números e exatamente 14 caracteres")
     private String cnpj;
     private String nome;
     private String endereco;
+    @Pattern(regexp = "\\d{12}", message = "Telefone de contato deve ter 12 caracteres numéricos")
     private String telefone;
     private String email;
 

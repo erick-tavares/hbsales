@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 
 
@@ -23,7 +24,7 @@ public class CategoriaProdutoRest {
     }
 
     @PostMapping
-    public CategoriaProdutoDTO save(@RequestBody CategoriaProdutoDTO categoriaProdutoDTO) {
+    public CategoriaProdutoDTO save(@Valid @RequestBody CategoriaProdutoDTO categoriaProdutoDTO) {
         LOGGER.info("Recebendo solicitação de persistência de categoria...");
         LOGGER.debug("Payaload: {}", categoriaProdutoDTO);
 

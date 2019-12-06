@@ -12,9 +12,9 @@ public class CategoriaProduto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nome", nullable = false, length = 255)
+    @Column(name = "nome", nullable = false, length = 50)
     private String nome;
-    @Column(name = "codigo", nullable = false)
+    @Column(name = "codigo", unique = true, nullable = false, length = 10)
     private int codigo;
 
     @ManyToOne
