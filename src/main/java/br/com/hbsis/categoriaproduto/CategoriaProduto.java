@@ -15,7 +15,7 @@ public class CategoriaProduto {
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
     @Column(name = "codigo", nullable = false)
-    private int codigo;
+    private String codigo;
 
     @ManyToOne
     @JoinColumn(name = "fornecedor_id", referencedColumnName = "id")
@@ -50,11 +50,11 @@ public class CategoriaProduto {
     }
 
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 

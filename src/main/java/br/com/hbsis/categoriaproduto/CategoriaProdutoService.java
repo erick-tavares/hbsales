@@ -3,6 +3,7 @@ package br.com.hbsis.categoriaproduto;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
+import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,34 +33,27 @@ public class CategoriaProdutoService {
 
     }
 
-    ////Metodo para consturir o codigo da categoria
-    public String codigoCategoria (String codigoDoUsuario, Long idFornecedor){
+    public String gerarCodigoCategoria(Long idFornecedor) {
 
-        Fornecedor fornecedor = fornecedorExistenteOptional.get();
+        String codigoCategoria = "";
 
-        fornecedor.getFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
+        String fornecedorCnpj = "";
+        FornecedorDTO fornecedorDTO = null;
+        fornecedorDTO = fornecedorService.findById(idFornecedor);
+        fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
+        String codigoDoUsuario = "1";
+        String codigoGerado = "";
+        codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario));
 
-        FornecedorDTO fornecedorDTO =
+        codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
 
-
-                fornecedorDTO.getCnpj().substring(6,10);
-
-
-        codigoCategoria = ("CAT" + idFornecedor + codigoDoUsuario);
-
-        return codigoCategoria();
-
+        return codigoCategoria;
     }
-
-
-
-
-
 
     public CategoriaProdutoDTO save(CategoriaProdutoDTO categoriaProdutoDTO) {
 
-        //Pegando o fornecedor completo do banco pelo ID fornecedor da tabela categoria_produto
+        //Pegando o fornecedor completo do banco, pelo ID fornecedor da tabela categoria_produto
         this.validate(categoriaProdutoDTO);
 
         LOGGER.info("Salvando categoria");
@@ -67,7 +61,7 @@ public class CategoriaProdutoService {
 
         CategoriaProduto categoriaProduto = new CategoriaProduto();
         categoriaProduto.setNome(categoriaProdutoDTO.getNome());
-        categoriaProduto.setCodigo(categoriaProdutoDTO.getCodigo());
+        categoriaProduto.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId()));
         categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
         categoriaProduto = this.iCategoriaProdutoRepository.save(categoriaProduto);
@@ -85,6 +79,7 @@ public class CategoriaProdutoService {
         if (StringUtils.isEmpty(categoriaProdutoDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nula/vazia");
         }
+
     }
 
     public List<CategoriaProduto> listarCategoria() {
@@ -130,7 +125,7 @@ public class CategoriaProdutoService {
                 if (fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
                     categoriaProduto.setNome(categoriaCSV[1]);
-                    categoriaProduto.setCodigo(Integer.parseInt(categoriaCSV[2]));
+                    categoriaProduto.setCodigo(categoriaCSV[2]);
                     categoriaProduto.setFornecedorId(fornecedorOptional.get());
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
@@ -142,8 +137,9 @@ public class CategoriaProdutoService {
             e.printStackTrace();
         }
     }
+
     /////////////////////////
-    public Optional <CategoriaProduto> findByIdOptional(Long id) {
+    public Optional<CategoriaProduto> findByIdOptional(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
         if (categoriaProdutoOptional.isPresent()) {
@@ -185,7 +181,7 @@ public class CategoriaProdutoService {
             LOGGER.debug("Categoria Existente: {}", categoriaProdutoExistente);
 
             categoriaProdutoExistente.setNome(categoriaProdutoDTO.getNome());
-            categoriaProdutoExistente.setCodigo(categoriaProdutoDTO.getCodigo());
+            categoriaProdutoExistente.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId()));
             categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
             categoriaProdutoExistente = this.iCategoriaProdutoRepository.save(categoriaProdutoExistente);
