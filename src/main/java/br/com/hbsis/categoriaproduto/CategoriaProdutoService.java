@@ -33,7 +33,7 @@ public class CategoriaProdutoService {
 
     }
 
-    public String gerarCodigoCategoria(Long idFornecedor) {
+    public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario ) {
 
         String codigoCategoria = "";
 
@@ -42,7 +42,10 @@ public class CategoriaProdutoService {
         fornecedorDTO = fornecedorService.findById(idFornecedor);
         fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
-        String codigoDoUsuario = "1";
+
+        //CategoriaProdutoDTO categoriaProdutoDTO = null;
+        //categoriaProdutoDTO.getCodigo();
+
         String codigoGerado = "";
         codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario));
 
@@ -61,7 +64,7 @@ public class CategoriaProdutoService {
 
         CategoriaProduto categoriaProduto = new CategoriaProduto();
         categoriaProduto.setNome(categoriaProdutoDTO.getNome());
-        categoriaProduto.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId()));
+        categoriaProduto.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(),categoriaProdutoDTO.getCodigo()));
         categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
         categoriaProduto = this.iCategoriaProdutoRepository.save(categoriaProduto);
@@ -181,7 +184,7 @@ public class CategoriaProdutoService {
             LOGGER.debug("Categoria Existente: {}", categoriaProdutoExistente);
 
             categoriaProdutoExistente.setNome(categoriaProdutoDTO.getNome());
-            categoriaProdutoExistente.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId()));
+            categoriaProdutoExistente.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(),categoriaProdutoDTO.getCodigo()));
             categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
             categoriaProdutoExistente = this.iCategoriaProdutoRepository.save(categoriaProdutoExistente);
