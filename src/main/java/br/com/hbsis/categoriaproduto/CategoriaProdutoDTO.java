@@ -8,6 +8,7 @@ public class CategoriaProdutoDTO {
     @NotBlank(message = "nome é obrigatório")
     private String nome;
     private Long fornecedorId;
+    @NotBlank(message = "código deve ter entre 1 a 4 números")
     private String codigo;
 
 
@@ -22,7 +23,7 @@ public class CategoriaProdutoDTO {
         return new CategoriaProdutoDTO(
                 categoriaProduto.getId(),
                 categoriaProduto.getNome(),
-                categoriaProduto.getFornecedorId(),
+                categoriaProduto.getFornecedorId().getId(),
                 categoriaProduto.getCodigo()
         );
     }

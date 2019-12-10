@@ -53,6 +53,13 @@ public class FornecedorService {
         if (StringUtils.isEmpty(fornecedorDTO.getCnpj())) {
             throw new IllegalArgumentException("CNPJ não deve ser nulo/vazio");
         }
+        if (!(StringUtils.isNumeric(fornecedorDTO.getCnpj()))) {
+            throw new IllegalArgumentException("Cnpj deve ser apenas numeros");
+        }
+        if (fornecedorDTO.getCnpj().length() != 14){
+            throw new IllegalArgumentException("Cnpj deve ter exatamente 14 números");
+        }
+
         if (StringUtils.isEmpty(fornecedorDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nulo/vazio");
         }
@@ -61,6 +68,9 @@ public class FornecedorService {
         }
         if (StringUtils.isEmpty(fornecedorDTO.getTelefone())) {
             throw new IllegalArgumentException("Telefone não deve ser nulo/vazio");
+        }
+        if (!(StringUtils.isNumeric(fornecedorDTO.getTelefone()))) {
+            throw new IllegalArgumentException("Telefone deve ser apenas numeros");
         }
         if (StringUtils.isEmpty(fornecedorDTO.getEmail())) {
             throw new IllegalArgumentException("E-mail não deve ser nulo/vazio");

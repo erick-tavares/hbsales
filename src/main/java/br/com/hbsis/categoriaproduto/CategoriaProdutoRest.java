@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.text.ParseException;
 
 
 @RestController
@@ -47,7 +48,7 @@ public class CategoriaProdutoRest {
 
     // Exportando CSV
     @RequestMapping("/export-categorias")
-    public void exportCSV(HttpServletResponse response) throws IOException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 
         this.categoriaProdutoService.exportCSV(response);

@@ -14,7 +14,9 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.MaskFormatter;
 import java.io.*;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +35,7 @@ public class CategoriaProdutoService {
 
     }
 
-    public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario ) {
+    public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
 
         String codigoCategoria = "";
 
@@ -41,10 +43,6 @@ public class CategoriaProdutoService {
         FornecedorDTO fornecedorDTO = null;
         fornecedorDTO = fornecedorService.findById(idFornecedor);
         fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
-
-
-        //CategoriaProdutoDTO categoriaProdutoDTO = null;
-        //categoriaProdutoDTO.getCodigo();
 
         String codigoGerado = "";
         codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario));
@@ -64,7 +62,7 @@ public class CategoriaProdutoService {
 
         CategoriaProduto categoriaProduto = new CategoriaProduto();
         categoriaProduto.setNome(categoriaProdutoDTO.getNome());
-        categoriaProduto.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(),categoriaProdutoDTO.getCodigo()));
+        categoriaProduto.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(), categoriaProdutoDTO.getCodigo()));
         categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
         categoriaProduto = this.iCategoriaProdutoRepository.save(categoriaProduto);
@@ -82,7 +80,12 @@ public class CategoriaProdutoService {
         if (StringUtils.isEmpty(categoriaProdutoDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nula/vazia");
         }
-
+        if (StringUtils.isEmpty(categoriaProdutoDTO.getCodigo())) {
+            throw new IllegalArgumentException("Código não deve ser nula/vazia");
+        }
+        if (!(StringUtils.isNumeric(categoriaProdutoDTO.getCodigo()))) {
+            throw new IllegalArgumentException("Código deve ser apenas números");
+        }
     }
 
     public List<CategoriaProduto> listarCategoria() {
@@ -91,26 +94,30 @@ public class CategoriaProdutoService {
     }
 
     ////// Exportando CSV, setando filename e conteúdo
-    public String exportCSV(HttpServletResponse response) throws IOException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String categoriaProdutoCSV = "categoriaProduto.csv";
         response.setContentType("text/csv");
 
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", categoriaProdutoCSV);
         response.setHeader(headerKey, headerValue);
+        PrintWriter printWriter = response.getWriter();
 
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
-                CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+        MaskFormatter mask = new MaskFormatter("##.###.###/####-##");
+        mask.setValueContainsLiteralCharacters(false);
 
-        String[] header = {"id", "nome", "codigo", "fornecedorId"};
-        csvWriter.writeHeader(header);
+        String header = "nome;codigo;razaoSocial;cnpj";
+        printWriter.println(header);
 
         for (CategoriaProduto categoriaCSVObjeto : listarCategoria()) {
-            csvWriter.write(categoriaCSVObjeto, header);
-        }
-        csvWriter.close();
+            String categoriaNome = categoriaCSVObjeto.getNome();
+            String categoriaCodigo = categoriaCSVObjeto.getCodigo();
+            String razaoSocial = categoriaCSVObjeto.getFornecedorId().getRazaoSocial();
+            String fornecedorCnpj = mask.valueToString(categoriaCSVObjeto.getFornecedorId().getCnpj());
 
-        return csvWriter.toString();
+            printWriter.println(categoriaNome + ";" + categoriaCodigo + ";" + razaoSocial + ";" + fornecedorCnpj);
+        }
+        printWriter.close();
     }
 
     ///Import CSV
@@ -123,12 +130,16 @@ public class CategoriaProdutoService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<Fornecedor> fornecedorOptional = fornecedorService.findByIdOptional(Long.parseLong(categoriaCSV[3]));
+              //  Optional<Fornecedor> fornecedorOptional = fornecedorService.findByIdOptional(Long.parseLong(categoriaCSV[3]));
 
                 if (fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
+                    categoriaProduto.setCodigo(categoriaCSV[0]);
                     categoriaProduto.setNome(categoriaCSV[1]);
-                    categoriaProduto.setCodigo(categoriaCSV[2]);
+                    categoriaProduto.setFornecedorId(fornecedorOptional.get().setRazaoSocial(categoriaCSV[2]));
+
+                    // categoriaProduto.setFornecedorId(fornecedorOptional.get());
+                    categoriaProduto.setFornecedorId(fornecedorOptional.get());
                     categoriaProduto.setFornecedorId(fornecedorOptional.get());
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
@@ -184,7 +195,7 @@ public class CategoriaProdutoService {
             LOGGER.debug("Categoria Existente: {}", categoriaProdutoExistente);
 
             categoriaProdutoExistente.setNome(categoriaProdutoDTO.getNome());
-            categoriaProdutoExistente.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(),categoriaProdutoDTO.getCodigo()));
+            categoriaProdutoExistente.setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(), categoriaProdutoDTO.getCodigo()));
             categoriaProdutoExistente.setFornecedorId(fornecedorService.findFornecedorById(categoriaProdutoDTO.getFornecedorId()));
 
             categoriaProdutoExistente = this.iCategoriaProdutoRepository.save(categoriaProdutoExistente);
