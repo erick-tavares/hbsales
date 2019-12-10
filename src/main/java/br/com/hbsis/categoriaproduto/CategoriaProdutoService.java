@@ -3,15 +3,11 @@ package br.com.hbsis.categoriaproduto;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
-import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.MaskFormatter;
@@ -130,21 +126,20 @@ public class CategoriaProdutoService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-              //  Optional<Fornecedor> fornecedorOptional = fornecedorService.findByIdOptional(Long.parseLong(categoriaCSV[3]));
+                Optional<Fornecedor> fornecedorOptional = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
 
                 if (fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
                     categoriaProduto.setCodigo(categoriaCSV[0]);
                     categoriaProduto.setNome(categoriaCSV[1]);
-                    categoriaProduto.setFornecedorId(fornecedorOptional.get().setRazaoSocial(categoriaCSV[2]));
 
-                    // categoriaProduto.setFornecedorId(fornecedorOptional.get());
-                    categoriaProduto.setFornecedorId(fornecedorOptional.get());
-                    categoriaProduto.setFornecedorId(fornecedorOptional.get());
+                    Fornecedor fornecedor = new Fornecedor();
+                    fornecedor.setRazaoSocial(categoriaCSV[2]);
+                    fornecedor.setCnpj(categoriaCSV[3].replaceAll("\\D", ""));
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
                 } else {
-                    throw new IllegalArgumentException(String.format("Id %s não existe", fornecedorOptional));
+                    throw new IllegalArgumentException(String.format("CNPJ %s não existe", fornecedorOptional));
                 }
             }
         } catch (IOException e) {
