@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,7 +143,7 @@ public class LinhaCategoriaService {
     }
 
     ////// Exportando CSV
-    public String exportCSV(HttpServletResponse response) throws IOException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String linhaCategoriaCSV = "linhaCategoria.csv";
         response.setContentType("text/csv");
 
@@ -149,18 +151,20 @@ public class LinhaCategoriaService {
         String headerValue = String.format("attachment; filename=\"%s\"", linhaCategoriaCSV);
         response.setHeader(headerKey, headerValue);
 
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
-                CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+        PrintWriter printWriter = response.getWriter();
 
-        String[] header = {"id", "codigo","nome", "categoriaId"};
-        csvWriter.writeHeader(header);
+        String header = "codigoLinha;nomeLinha;codigoCategoria;nomeCategoria";
+        printWriter.println(header);
 
         for (LinhaCategoria linhaCategoriaCSVObjeto : listarLinhaCategoria()) {
-            csvWriter.write(linhaCategoriaCSVObjeto, header);
-        }
-        csvWriter.close();
+            String linhaCategoriaCodigo = linhaCategoriaCSVObjeto.getCodigo();
+            String linhaCategoriaNome = linhaCategoriaCSVObjeto.getNome();
+            String categoriaProdutoCodigo = linhaCategoriaCSVObjeto.getCategoriaId().getCodigo();
+            String categoriaProdutoNome = linhaCategoriaCSVObjeto.getCategoriaId().getNome();
 
-        return csvWriter.toString();
+            printWriter.println(linhaCategoriaCodigo + ";" + linhaCategoriaNome + ";" + categoriaProdutoCodigo + ";" + categoriaProdutoNome);
+        }
+        printWriter.close();
     }
 
     ///Import CSV

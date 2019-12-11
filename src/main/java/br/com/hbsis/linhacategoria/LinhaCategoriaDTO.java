@@ -1,8 +1,12 @@
 package br.com.hbsis.linhacategoria;
 
+import javax.validation.constraints.NotBlank;
+
 public class LinhaCategoriaDTO {
     private Long id;
+    @NotBlank(message = "código é obrigatório")
     private String codigo;
+    @NotBlank(message = "nome é obrigatório e deve ter no máximo 10 caracteres")
     private String nome;
     private Long categoriaId;
 
