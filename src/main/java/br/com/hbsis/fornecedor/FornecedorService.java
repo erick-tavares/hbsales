@@ -78,11 +78,11 @@ public class FornecedorService {
     }
 
 
-    public Optional <Fornecedor> findByCnpj(String cnpj) {
+    public Fornecedor findByCnpj(String cnpj) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findByCnpj(cnpj);
 
         if (fornecedorOptional.isPresent()) {
-            return fornecedorOptional;
+            return fornecedorOptional.get();
         }
 
         throw new IllegalArgumentException(String.format("Cnpj %s não existe", cnpj));

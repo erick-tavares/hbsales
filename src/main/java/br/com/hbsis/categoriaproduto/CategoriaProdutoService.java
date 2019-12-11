@@ -126,16 +126,16 @@ public class CategoriaProdutoService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<Fornecedor> fornecedorOptional = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
+                Optional<Fornecedor> fornecedorOptional = Optional.ofNullable(fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", "")));
 
                 if (fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
-                    categoriaProduto.setCodigo(categoriaCSV[0]);
-                    categoriaProduto.setNome(categoriaCSV[1]);
+                    categoriaProduto.setNome(categoriaCSV[0]);
+                    categoriaProduto.setCodigo(categoriaCSV[1]);
 
                     Fornecedor fornecedor = new Fornecedor();
-                    fornecedor.setRazaoSocial(categoriaCSV[2]);
-                    fornecedor.setCnpj(categoriaCSV[3].replaceAll("\\D", ""));
+                    fornecedor = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
+                    categoriaProduto.setFornecedorId(fornecedor);
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
                 } else {
