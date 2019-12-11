@@ -2,11 +2,11 @@ package br.com.hbsis.linhacategoria;
 
 public class LinhaCategoriaDTO {
     private Long id;
-    private int codigo;
+    private String codigo;
     private String nome;
     private Long categoriaId;
 
-    public LinhaCategoriaDTO(Long id, int codigo, String nome, Long categoriaId) {
+    public LinhaCategoriaDTO(Long id, String codigo, String nome, Long categoriaId) {
         this.id = id;
         this.codigo = codigo;
         this.nome = nome;
@@ -18,7 +18,7 @@ public class LinhaCategoriaDTO {
                 linhaCategoria.getId(),
                 linhaCategoria.getCodigo(),
                 linhaCategoria.getNome(),
-                linhaCategoria.getCategoriaId()
+                linhaCategoria.getCategoriaId().getId()
         );
     }
 
@@ -40,11 +40,11 @@ public class LinhaCategoriaDTO {
         this.id = id;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 

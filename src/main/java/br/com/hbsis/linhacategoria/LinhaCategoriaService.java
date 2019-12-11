@@ -42,7 +42,7 @@ public class LinhaCategoriaService {
         LOGGER.debug("Linha de Categoria: {}", linhaCategoriaDTO);
 
         LinhaCategoria linhaCategoria = new LinhaCategoria();
-        linhaCategoria.setCodigo(linhaCategoriaDTO.getCodigo());
+        linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaDTO.getCodigo()));
         linhaCategoria.setNome(linhaCategoriaDTO.getNome());
 
         linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(linhaCategoriaDTO.getCategoriaId()));
@@ -62,6 +62,18 @@ public class LinhaCategoriaService {
         if (StringUtils.isEmpty(linhaCategoriaDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nulo/vazio");
         }
+        if (StringUtils.isEmpty(linhaCategoriaDTO.getCodigo())) {
+            throw new IllegalArgumentException("Código não deve ser nula/vazia");
+        }
+    }
+
+
+    public String gerarCodigoLinhaCategoria(String codigoDoUsuario) {
+
+        String codigoGerado = String.format("%10s", codigoDoUsuario).toUpperCase();
+        codigoGerado = codigoGerado.replace(' ','0');
+
+        return codigoGerado;
     }
 
     public List<LinhaCategoria> listarLinhaCategoria() {
@@ -111,7 +123,7 @@ public class LinhaCategoriaService {
             LOGGER.debug("Linha da categoria Existente: {}", linhaCategoriaExistente);
 
             linhaCategoriaExistente.setNome(linhaCategoriaDTO.getNome());
-            linhaCategoriaExistente.setCodigo(linhaCategoriaDTO.getCodigo());
+            linhaCategoriaExistente.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaDTO.getCodigo()));
             linhaCategoriaExistente.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(linhaCategoriaDTO.getCategoriaId()));
 
             linhaCategoriaExistente = this.iLinhaCategoriaRepository.save(linhaCategoriaExistente);
@@ -165,7 +177,7 @@ public class LinhaCategoriaService {
 
                 if (categoriaProdutoOptional.isPresent()) {
                     LinhaCategoria linhaCategoria = new LinhaCategoria();
-                    linhaCategoria.setCodigo(Integer.parseInt(linhaCategoriaCSV[1]));
+                    //linhaCategoria.setCodigo(Integer.parseInt(linhaCategoriaCSV[1]));
                     linhaCategoria.setNome(linhaCategoriaCSV[2]);
                     linhaCategoria.setCategoriaId(categoriaProdutoOptional.get());
 

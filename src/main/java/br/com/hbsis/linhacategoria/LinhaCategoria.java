@@ -4,6 +4,7 @@ package br.com.hbsis.linhacategoria;
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "linha_categoria")
@@ -12,9 +13,10 @@ public class LinhaCategoria {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "codigo", nullable = false)
-    private int codigo;
-    @Column (name = "nome", nullable = false, length = 225)
+    @Column(name = "codigo", unique = true, nullable = false)
+    @Size (min = 10 , max= 10)
+    private String codigo;
+    @Column (name = "nome", nullable = false, length = 50)
     private String nome;
 
     @ManyToOne
@@ -43,11 +45,11 @@ public class LinhaCategoria {
         this.id = id;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
@@ -59,8 +61,8 @@ public class LinhaCategoria {
         this.nome = nome;
     }
 
-    public Long getCategoriaId() {
-        return categoriaId.getId();
+    public CategoriaProduto getCategoriaId() {
+        return categoriaId;
     }
 
     public void setCategoriaId(CategoriaProduto categoriaId) {
