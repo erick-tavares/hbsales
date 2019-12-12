@@ -7,15 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +79,15 @@ public class LinhaCategoriaService {
     public List<LinhaCategoria> listarLinhaCategoria() {
         List<LinhaCategoria> linhaCategoria = this.iLinhaCategoriaRepository.findAll();
         return linhaCategoria;
+    }
+
+    public LinhaCategoria findByCodigo(String codigo) {
+        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findByCodigo(codigo);
+
+        if (linhaCategoriaOptional.isPresent()) {
+            return linhaCategoriaOptional.get();
+        }
+        throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
     }
 
     public Optional<LinhaCategoria> findByIdOptional(Long id) {
@@ -177,22 +184,26 @@ public class LinhaCategoriaService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] linhaCategoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<CategoriaProduto> categoriaProdutoOptional = categoriaProdutoService.findByIdOptional(Long.parseLong(linhaCategoriaCSV[3]));
+                Optional<CategoriaProduto> categoriaProdutoOptional = Optional.ofNullable(categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]));
+                Optional<LinhaCategoria> linhaCategoriaExisteOptional = this.iLinhaCategoriaRepository.findByCodigo(linhaCategoriaCSV[0]);
 
-                if (categoriaProdutoOptional.isPresent()) {
-                    LinhaCategoria linhaCategoria = new LinhaCategoria();
-                    //linhaCategoria.setCodigo(Integer.parseInt(linhaCategoriaCSV[1]));
-                    linhaCategoria.setNome(linhaCategoriaCSV[2]);
-                    linhaCategoria.setCategoriaId(categoriaProdutoOptional.get());
 
-                    this.iLinhaCategoriaRepository.save(linhaCategoria);
-                } else {
-                    throw new IllegalArgumentException(String.format("Id %s não existe", categoriaProdutoOptional));
+                    if (!(linhaCategoriaExisteOptional.isPresent()) && categoriaProdutoOptional.isPresent()) {
+                        LinhaCategoria linhaCategoria = new LinhaCategoria();
+                        linhaCategoria.setCodigo(linhaCategoriaCSV[0]);
+                        linhaCategoria.setNome(linhaCategoriaCSV[1]);
+
+                        CategoriaProduto categoriaProduto = new CategoriaProduto();
+                        categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
+                        linhaCategoria.setCategoriaId(categoriaProduto);
+
+                        this.iLinhaCategoriaRepository.save(linhaCategoria);
+                    }
                 }
+
+            } catch(IOException e){
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 }

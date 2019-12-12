@@ -1,25 +1,36 @@
 package br.com.hbsis.produto;
 
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public class ProdutoDTO {
     private Long id;
-    private int codigo;
+    @NotBlank(message = "codigo é obrigatório")
+    private String codigo;
+    @NotBlank(message = "nome é obrigatório")
     private String nome ;
+    @NotBlank(message = "preço é obrigatório")
     private double preco ;
+    @NotBlank(message = "unidade por caixa é obrigatório")
     private int unidadePorCaixa ;
+    @NotBlank(message = "peso por unidade é obrigatório")
     private double pesoPorUnidade ;
+    @NotBlank(message = "unidade de medida do peso é obrigatório")
+    private String unidadeMedidaPeso;
+    @NotBlank(message = "validade é obrigatória")
     private LocalDateTime validade;
+    @NotBlank(message = "linhaCategoriaId é obrigatório")
     private Long linhaCategoriaId;
 
-    public ProdutoDTO(Long id, int codigo, String nome, double preco, int unidadePorCaixa, double pesoPorUnidade, LocalDateTime validade, Long linhaCategoriaId) {
+    public ProdutoDTO(Long id, String codigo, String nome, double preco, int unidadePorCaixa, double pesoPorUnidade, String unidadeMedidaPeso, LocalDateTime validade, Long linhaCategoriaId) {
         this.id = id;
         this.codigo = codigo;
         this.nome = nome;
         this.preco = preco;
         this.unidadePorCaixa = unidadePorCaixa;
         this.pesoPorUnidade = pesoPorUnidade;
+        this.unidadeMedidaPeso = unidadeMedidaPeso;
         this.validade = validade;
         this.linhaCategoriaId = linhaCategoriaId;
     }
@@ -28,11 +39,12 @@ public class ProdutoDTO {
     public String toString() {
         return "ProdutoDTO{" +
                 "id=" + id +
-                ", codigo=" + codigo +
+                ", codigo='" + codigo + '\'' +
                 ", nome='" + nome + '\'' +
                 ", preco=" + preco +
                 ", unidadePorCaixa=" + unidadePorCaixa +
                 ", pesoPorUnidade=" + pesoPorUnidade +
+                ", unidadeMedidaPeso='" + unidadeMedidaPeso + '\'' +
                 ", validade=" + validade +
                 ", linhaCategoriaId=" + linhaCategoriaId +
                 '}';
@@ -44,14 +56,6 @@ public class ProdutoDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(int codigo) {
-        this.codigo = codigo;
     }
 
     public String getNome() {
@@ -102,6 +106,22 @@ public class ProdutoDTO {
         this.linhaCategoriaId = linhaCategoriaId;
     }
 
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getUnidadeMedidaPeso() {
+        return unidadeMedidaPeso;
+    }
+
+    public void setUnidadeMedidaPeso(String unidadeMedidaPeso) {
+        this.unidadeMedidaPeso = unidadeMedidaPeso;
+    }
+
     public static ProdutoDTO of (Produto produto){
         return new ProdutoDTO(
                 produto.getId(),
@@ -110,6 +130,7 @@ public class ProdutoDTO {
                 produto.getPreco(),
                 produto.getUnidadePorCaixa(),
                 produto.getPesoPorUnidade(),
+                produto.getUnidadeMedidaPeso(),
                 produto.getValidade(),
                 produto.getLinhaCategoriaId()
         );

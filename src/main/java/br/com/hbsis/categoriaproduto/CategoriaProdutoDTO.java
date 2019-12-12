@@ -7,6 +7,7 @@ public class CategoriaProdutoDTO {
     private Long id;
     @NotBlank(message = "nome é obrigatório")
     private String nome;
+    @NotBlank(message = "fornecedorId é obrigatório")
     private Long fornecedorId;
     @NotBlank(message = "código deve ter entre 1 a 4 números")
     private String codigo;

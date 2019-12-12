@@ -155,7 +155,7 @@ public class ProdutoService {
 
                 if (linhaCategoriaOptional.isPresent()) {
                     Produto produto = new Produto();
-                    produto.setCodigo(Integer.parseInt(produtoCSV[1]));
+                   // produto.setCodigo(Integer.parseInt(produtoCSV[1]));
                     produto.setNome(produtoCSV[2]);
                     produto.setPreco(Double.parseDouble(produtoCSV[3]));
                     produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[4]));

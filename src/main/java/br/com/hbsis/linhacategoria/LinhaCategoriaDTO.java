@@ -8,6 +8,7 @@ public class LinhaCategoriaDTO {
     private String codigo;
     @NotBlank(message = "nome é obrigatório e deve ter no máximo 10 caracteres")
     private String nome;
+    @NotBlank(message = "categoriaID é obrigatório")
     private Long categoriaId;
 
     public LinhaCategoriaDTO(Long id, String codigo, String nome, Long categoriaId) {

@@ -89,7 +89,7 @@ public class CategoriaProdutoService {
         return categoriaProduto;
     }
 
-    ////// Exportando CSV, setando filename e conteúdo
+    ////// Exportando CSV
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String categoriaProdutoCSV = "categoriaProduto.csv";
         response.setContentType("text/csv");
@@ -127,8 +127,9 @@ public class CategoriaProdutoService {
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
                 Optional<Fornecedor> fornecedorOptional = Optional.ofNullable(fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", "")));
+                Optional<CategoriaProduto> categoriaProdutoExisteOptional = this.iCategoriaProdutoRepository.findByCodigo(categoriaCSV[1]);
 
-                if (fornecedorOptional.isPresent()) {
+                if (!(categoriaProdutoExisteOptional.isPresent()) && fornecedorOptional.isPresent()) {
                     CategoriaProduto categoriaProduto = new CategoriaProduto();
                     categoriaProduto.setNome(categoriaCSV[0]);
                     categoriaProduto.setCodigo(categoriaCSV[1]);
@@ -138,8 +139,6 @@ public class CategoriaProdutoService {
                     categoriaProduto.setFornecedorId(fornecedor);
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
-                } else {
-                    throw new IllegalArgumentException(String.format("CNPJ %s não existe", fornecedorOptional));
                 }
             }
         } catch (IOException e) {
@@ -147,7 +146,15 @@ public class CategoriaProdutoService {
         }
     }
 
-    /////////////////////////
+    public CategoriaProduto findByCodigo(String codigo) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
+
+        if (categoriaProdutoOptional.isPresent()) {
+            return categoriaProdutoOptional.get();
+        }
+        throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
+    }
+
     public Optional<CategoriaProduto> findByIdOptional(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
