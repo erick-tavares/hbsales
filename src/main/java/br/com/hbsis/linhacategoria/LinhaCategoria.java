@@ -1,8 +1,6 @@
 package br.com.hbsis.linhacategoria;
 
-
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 

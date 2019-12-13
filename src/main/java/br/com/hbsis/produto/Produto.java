@@ -2,9 +2,11 @@ package br.com.hbsis.produto;
 
 
 import br.com.hbsis.linhacategoria.LinhaCategoria;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "produto")
@@ -23,13 +25,13 @@ public class Produto {
     private int unidadePorCaixa;
     @Column(name = "peso_por_unidade", nullable = false)
     private double pesoPorUnidade;
-    @Column (name = "unidade_medida_peso", nullable = false)
-    private String unidadeMedidaPeso;
+    @Column(name = "unidade_medida_peso", nullable = false)
+    private String unidadeMedidaPeso = "";
     @Column(name = "validade", nullable = false)
-    private LocalDateTime validade;
+    private LocalDate validade;
 
     @ManyToOne
-    @JoinColumn (name = "linha_categoria_id" , referencedColumnName = "id")
+    @JoinColumn(name = "linha_categoria_id", referencedColumnName = "id")
     private LinhaCategoria linhaCategoriaId;
 
     public Produto() {
@@ -90,16 +92,16 @@ public class Produto {
         this.pesoPorUnidade = pesoPorUnidade;
     }
 
-    public LocalDateTime getValidade() {
+    public LocalDate getValidade() {
         return validade;
     }
 
-    public void setValidade(LocalDateTime validade) {
+    public void setValidade(LocalDate validade) {
         this.validade = validade;
     }
 
-    public Long getLinhaCategoriaId() {
-        return linhaCategoriaId.getId();
+    public LinhaCategoria getLinhaCategoriaId() {
+        return linhaCategoriaId;
     }
 
     public void setLinhaCategoriaId(LinhaCategoria linhaCategoriaId) {

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/produtos")
@@ -52,15 +53,13 @@ public class ProdutoRest {
         this.produtoService.delete(id);
     }
 
-    //Importando CSV
     @PostMapping (value = "/import-produtos", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importProduto)throws IOException {
         this.produtoService.importCSV(importProduto);
     }
 
-    // Exportando CSV
     @RequestMapping("/export-produtos")
-    public void exportCSV(HttpServletResponse response)throws IOException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 
         this.produtoService.exportCSV(response);

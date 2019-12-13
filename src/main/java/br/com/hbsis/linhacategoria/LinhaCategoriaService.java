@@ -7,10 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.io.CsvBeanReader;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -26,16 +22,13 @@ public class LinhaCategoriaService {
     private final ILinhaCategoriaRepository iLinhaCategoriaRepository;
     private final CategoriaProdutoService categoriaProdutoService;
 
-
     public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService) {
         this.iLinhaCategoriaRepository = iLinhaCategoriaRepository;
         this.categoriaProdutoService = categoriaProdutoService;
-
     }
 
     public LinhaCategoriaDTO save(LinhaCategoriaDTO linhaCategoriaDTO) {
 
-        //Pegando o categoria produto completo do banco pelo ID categoria produto da tabela linha_categoria
         this.validate(linhaCategoriaDTO);
 
         LOGGER.info("Salvando linha de categoria");
@@ -149,8 +142,7 @@ public class LinhaCategoriaService {
         this.iLinhaCategoriaRepository.deleteById(id);
     }
 
-    ////// Exportando CSV
-    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
+    public void exportCSV(HttpServletResponse response) throws IOException {
         String linhaCategoriaCSV = "linhaCategoria.csv";
         response.setContentType("text/csv");
 
@@ -160,7 +152,7 @@ public class LinhaCategoriaService {
 
         PrintWriter printWriter = response.getWriter();
 
-        String header = "codigoLinha;nomeLinha;codigoCategoria;nomeCategoria";
+        String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";
         printWriter.println(header);
 
         for (LinhaCategoria linhaCategoriaCSVObjeto : listarLinhaCategoria()) {
@@ -174,7 +166,6 @@ public class LinhaCategoriaService {
         printWriter.close();
     }
 
-    ///Import CSV
     public void importCSV(MultipartFile importLinhaCategoria) {
         String linhaDoArquivo = "";
         String quebraDeLinha = ";";
@@ -193,8 +184,7 @@ public class LinhaCategoriaService {
                         linhaCategoria.setCodigo(linhaCategoriaCSV[0]);
                         linhaCategoria.setNome(linhaCategoriaCSV[1]);
 
-                        CategoriaProduto categoriaProduto = new CategoriaProduto();
-                        categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
+                        CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
                         linhaCategoria.setCategoriaId(categoriaProduto);
 
                         this.iLinhaCategoriaRepository.save(linhaCategoria);

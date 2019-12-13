@@ -28,7 +28,6 @@ public class CategoriaProdutoService {
     public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
-
     }
 
     public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
@@ -36,12 +35,11 @@ public class CategoriaProdutoService {
         String codigoCategoria = "";
 
         String fornecedorCnpj = "";
-        FornecedorDTO fornecedorDTO = null;
-        fornecedorDTO = fornecedorService.findById(idFornecedor);
+        FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
         fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
         String codigoGerado = "";
-        codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario));
+        codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario)).toUpperCase();
 
         codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
 
@@ -50,7 +48,6 @@ public class CategoriaProdutoService {
 
     public CategoriaProdutoDTO save(CategoriaProdutoDTO categoriaProdutoDTO) {
 
-        //Pegando o fornecedor completo do banco, pelo ID fornecedor da tabela categoria_produto
         this.validate(categoriaProdutoDTO);
 
         LOGGER.info("Salvando categoria");
@@ -89,7 +86,6 @@ public class CategoriaProdutoService {
         return categoriaProduto;
     }
 
-    ////// Exportando CSV
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String categoriaProdutoCSV = "categoriaProduto.csv";
         response.setContentType("text/csv");
@@ -102,7 +98,7 @@ public class CategoriaProdutoService {
         MaskFormatter mask = new MaskFormatter("##.###.###/####-##");
         mask.setValueContainsLiteralCharacters(false);
 
-        String header = "nome;codigo;razaoSocial;cnpj";
+        String header = "Nome;Código;Razão social;CNPJ";
         printWriter.println(header);
 
         for (CategoriaProduto categoriaCSVObjeto : listarCategoria()) {
@@ -116,7 +112,6 @@ public class CategoriaProdutoService {
         printWriter.close();
     }
 
-    ///Import CSV
     public void importCSV(MultipartFile importCategoria) {
         String linhaDoArquivo = "";
         String quebraDeLinha = ";";
@@ -134,8 +129,7 @@ public class CategoriaProdutoService {
                     categoriaProduto.setNome(categoriaCSV[0]);
                     categoriaProduto.setCodigo(categoriaCSV[1]);
 
-                    Fornecedor fornecedor = new Fornecedor();
-                    fornecedor = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
+                    Fornecedor fornecedor = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
                     categoriaProduto.setFornecedorId(fornecedor);
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);

@@ -54,13 +54,11 @@ public class LinhaCategoriaRest {
         this.linhaCategoriaService.delete(id);
     }
 
-    //Importando CSV
     @PostMapping (value = "/import-linhas", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importLinhaCategoria)throws IOException {
         this.linhaCategoriaService.importCSV(importLinhaCategoria);
     }
 
-    // Exportando CSV
     @RequestMapping("/export-linhas")
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");

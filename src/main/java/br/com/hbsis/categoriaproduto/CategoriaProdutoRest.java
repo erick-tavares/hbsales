@@ -40,13 +40,11 @@ public class CategoriaProdutoRest {
         return this.categoriaProdutoService.findById(id);
     }
 
-    //Importando CSV
     @PostMapping(value = "/import-categorias", consumes = "multipart/form-data")
     public void importCSV(@RequestParam("file") MultipartFile importCategoria) throws IOException {
         this.categoriaProdutoService.importCSV(importCategoria);
     }
 
-    // Exportando CSV
     @RequestMapping("/export-categorias")
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");

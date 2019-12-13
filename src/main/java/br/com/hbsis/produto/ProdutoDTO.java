@@ -2,7 +2,7 @@ package br.com.hbsis.produto;
 
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ProdutoDTO {
     private Long id;
@@ -19,11 +19,13 @@ public class ProdutoDTO {
     @NotBlank(message = "unidade de medida do peso é obrigatório")
     private String unidadeMedidaPeso;
     @NotBlank(message = "validade é obrigatória")
-    private LocalDateTime validade;
+    private LocalDate validade;
     @NotBlank(message = "linhaCategoriaId é obrigatório")
     private Long linhaCategoriaId;
 
-    public ProdutoDTO(Long id, String codigo, String nome, double preco, int unidadePorCaixa, double pesoPorUnidade, String unidadeMedidaPeso, LocalDateTime validade, Long linhaCategoriaId) {
+
+    public ProdutoDTO(Long id, String codigo, String nome, double preco, int unidadePorCaixa, double pesoPorUnidade,
+                      String unidadeMedidaPeso, LocalDate validade, Long linhaCategoriaId) {
         this.id = id;
         this.codigo = codigo;
         this.nome = nome;
@@ -90,11 +92,11 @@ public class ProdutoDTO {
         this.pesoPorUnidade = pesoPorUnidade;
     }
 
-    public LocalDateTime getValidade() {
+    public LocalDate getValidade() {
         return validade;
     }
 
-    public void setValidade(LocalDateTime validade) {
+    public void setValidade(LocalDate validade) {
         this.validade = validade;
     }
 
@@ -132,11 +134,8 @@ public class ProdutoDTO {
                 produto.getPesoPorUnidade(),
                 produto.getUnidadeMedidaPeso(),
                 produto.getValidade(),
-                produto.getLinhaCategoriaId()
+                produto.getLinhaCategoriaId().getId()
         );
-
-
-
 
     }
 

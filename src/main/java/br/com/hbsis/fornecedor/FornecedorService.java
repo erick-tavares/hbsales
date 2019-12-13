@@ -33,7 +33,6 @@ public class FornecedorService {
         fornecedor.setTelefone(fornecedorDTO.getTelefone());
         fornecedor.setEmail(fornecedorDTO.getEmail());
 
-
         fornecedor = this.iFornecedorRepository.save(fornecedor);
 
         return FornecedorDTO.of(fornecedor);
@@ -56,7 +55,7 @@ public class FornecedorService {
         if (!(StringUtils.isNumeric(fornecedorDTO.getCnpj()))) {
             throw new IllegalArgumentException("Cnpj deve ser apenas numeros");
         }
-        if (fornecedorDTO.getCnpj().length() != 14){
+        if (fornecedorDTO.getCnpj().length() != 14) {
             throw new IllegalArgumentException("Cnpj deve ter exatamente 14 números");
         }
 
@@ -84,7 +83,6 @@ public class FornecedorService {
         if (fornecedorOptional.isPresent()) {
             return fornecedorOptional.get();
         }
-
         throw new IllegalArgumentException(String.format("Cnpj %s não existe", cnpj));
     }
 
@@ -129,7 +127,6 @@ public class FornecedorService {
 
             return FornecedorDTO.of(fornecedorExistente);
         }
-
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
