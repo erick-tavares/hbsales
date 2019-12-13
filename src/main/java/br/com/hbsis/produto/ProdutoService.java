@@ -109,6 +109,15 @@ public class ProdutoService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+    public Produto findByCodigo(String codigo) {
+        Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(codigo);
+
+        if (produtoOptional.isPresent()) {
+            return produtoOptional.get();
+        }
+        throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
+    }
+
     public ProdutoDTO update(ProdutoDTO produtoDTO, Long id) {
         Optional<Produto> produtoExistenteOptional = this.iProdutoRepository.findById(id);
 
@@ -193,23 +202,18 @@ public class ProdutoService {
 
             String linhaCategoriaCodigo = produtoCSVObjeto.getLinhaCategoriaId().getCodigo();
             String linhaCategoriaNome = produtoCSVObjeto.getLinhaCategoriaId().getNome();
+
             String categoriaCodigo = produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getCodigo();
             String categoriaNome = produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getNome();
-            String fornecedorCnpj = produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getCnpj();
-            String fornecedorRazaoSocial = produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getRazaoSocial();
 
-            printWriter.println();
+            String fornecedorCnpj = mask.valueToString(produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getCnpj());
+            String fornecedorRazaoSocial = produtoCSVObjeto.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getRazaoSocial();
 
             printWriter.println(produtoCodigo + ";" + produtoNome + ";" + produtoPreco + ";" + produtoUnidadePorCaixa + ";" +
                     produtoPesoPorUnidadeMedida + ";" + produtoValidade + ";" + linhaCategoriaCodigo + ";" + linhaCategoriaNome +
                     ";" + categoriaCodigo + ";" + categoriaNome + ";" + fornecedorCnpj + ";" + fornecedorRazaoSocial);
         }
         printWriter.close();
-    }
-
-    public void precoFormato(double preco) {
-
-
     }
 
     public void importCSV(MultipartFile importProduto) {
@@ -221,21 +225,25 @@ public class ProdutoService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<LinhaCategoria> linhaCategoriaOptional = linhaCategoriaService.findByIdOptional(Long.parseLong(produtoCSV[7]));
+                Optional<LinhaCategoria> linhaCategoriaOptional = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[6]));
+                Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
 
-                if (linhaCategoriaOptional.isPresent()) {
+                if (!(produtoOptional.isPresent()) && linhaCategoriaOptional.isPresent()) {
                     Produto produto = new Produto();
-                    // produto.setCodigo(Integer.parseInt(produtoCSV[1]));
-                    produto.setNome(produtoCSV[2]);
-                    produto.setPreco(Double.parseDouble(produtoCSV[3]));
-                    produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[4]));
-                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[5]));
-                    produto.setValidade(LocalDate.parse(produtoCSV[6]));
-                    produto.setLinhaCategoriaId(linhaCategoriaOptional.get());
+                    produto.setCodigo(produtoCSV[0]);
+                    produto.setNome(produtoCSV[1]);
+                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("\\D", "")));
+                    produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
+                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("\\D", "")));
+                    produto.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[^0-9]", ""));
+                    produto.setValidade(LocalDate.parse((produtoCSV[5].replaceAll("/", "")), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+                    //produto.setValidade(LocalDate.parse("yyyy-MM-dd", DateTimeFormatter.ofPattern(produtoCSV[5].replaceAll("/", ""))));
+
+                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[6]);
+                    produto.setLinhaCategoriaId(linhaCategoria);
 
                     this.iProdutoRepository.save(produto);
-                } else {
-                    throw new IllegalArgumentException(String.format("Id %s não existe", linhaCategoriaOptional));
                 }
             }
         } catch (IOException e) {
