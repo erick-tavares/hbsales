@@ -5,8 +5,6 @@ import br.com.hbsis.linhacategoria.LinhaCategoriaService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +33,7 @@ public class ProdutoService {
         this.iProdutoRepository = iProdutoRepository;
         this.linhaCategoriaService = linhaCategoriaService;
     }
+
 
     public ProdutoDTO save(ProdutoDTO produtoDTO) {
 
@@ -230,20 +229,20 @@ public class ProdutoService {
 
                 if (!(produtoOptional.isPresent()) && linhaCategoriaOptional.isPresent()) {
                     Produto produto = new Produto();
-                    produto.setCodigo(produtoCSV[0]);
+                    produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
                     produto.setNome(produtoCSV[1]);
-                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("\\D", "")));
+                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",",".")));
                     produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("\\D", "")));
-                    produto.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[^0-9]", ""));
-                    produto.setValidade(LocalDate.parse((produtoCSV[5].replaceAll("/", "")), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("[kgm]", "").replace(",",".")));
+                    produto.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[\\d,]", ""));
 
-                    //produto.setValidade(LocalDate.parse("yyyy-MM-dd", DateTimeFormatter.ofPattern(produtoCSV[5].replaceAll("/", ""))));
+                    produto.setValidade(LocalDate.parse(produtoCSV[5].replaceAll("/","-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                     LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[6]);
                     produto.setLinhaCategoriaId(linhaCategoria);
 
                     this.iProdutoRepository.save(produto);
+                    LOGGER.info("Importando produto... id: [{}]");
                 }
             }
         } catch (IOException e) {

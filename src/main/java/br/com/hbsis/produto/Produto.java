@@ -2,11 +2,9 @@ package br.com.hbsis.produto;
 
 
 import br.com.hbsis.linhacategoria.LinhaCategoria;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+
 
 @Entity
 @Table(name = "produto")
@@ -33,6 +31,7 @@ public class Produto {
     @ManyToOne
     @JoinColumn(name = "linha_categoria_id", referencedColumnName = "id")
     private LinhaCategoria linhaCategoriaId;
+
 
     public Produto() {
     }

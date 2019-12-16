@@ -181,13 +181,14 @@ public class LinhaCategoriaService {
 
                     if (!(linhaCategoriaExisteOptional.isPresent()) && categoriaProdutoOptional.isPresent()) {
                         LinhaCategoria linhaCategoria = new LinhaCategoria();
-                        linhaCategoria.setCodigo(linhaCategoriaCSV[0]);
+                        linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaCSV[0]));
                         linhaCategoria.setNome(linhaCategoriaCSV[1]);
 
                         CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
                         linhaCategoria.setCategoriaId(categoriaProduto);
 
                         this.iLinhaCategoriaRepository.save(linhaCategoria);
+                        LOGGER.info("Importando linha de categoria... id: [{}]");
                     }
                 }
 

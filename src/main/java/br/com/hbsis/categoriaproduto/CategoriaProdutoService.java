@@ -133,6 +133,7 @@ public class CategoriaProdutoService {
                     categoriaProduto.setFornecedorId(fornecedor);
 
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
+                    LOGGER.info("Importando categoria de produto... id: [{}]");
                 }
             }
         } catch (IOException e) {
