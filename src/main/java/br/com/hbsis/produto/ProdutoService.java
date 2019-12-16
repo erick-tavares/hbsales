@@ -1,5 +1,9 @@
 package br.com.hbsis.produto;
 
+import br.com.hbsis.categoriaproduto.CategoriaProduto;
+import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
+import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorService;
 import br.com.hbsis.linhacategoria.LinhaCategoria;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
 import org.apache.commons.lang.StringUtils;
@@ -27,11 +31,15 @@ public class ProdutoService {
 
     private final IProdutoRepository iProdutoRepository;
     private final LinhaCategoriaService linhaCategoriaService;
+    private final CategoriaProdutoService categoriaProdutoService;
+    private final FornecedorService fornecedorService;
 
 
-    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService) {
+    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService, CategoriaProdutoService categoriaProdutoService, FornecedorService fornecedorService) {
         this.iProdutoRepository = iProdutoRepository;
         this.linhaCategoriaService = linhaCategoriaService;
+        this.categoriaProdutoService = categoriaProdutoService;
+        this.fornecedorService = fornecedorService;
     }
 
 
@@ -231,12 +239,12 @@ public class ProdutoService {
                     Produto produto = new Produto();
                     produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
                     produto.setNome(produtoCSV[1]);
-                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",",".")));
+                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
                     produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("[kgm]", "").replace(",",".")));
+                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("[kgm]", "").replace(",", ".")));
                     produto.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[\\d,]", ""));
 
-                    produto.setValidade(LocalDate.parse(produtoCSV[5].replaceAll("/","-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                    produto.setValidade(LocalDate.parse(produtoCSV[5].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                     LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[6]);
                     produto.setLinhaCategoriaId(linhaCategoria);
@@ -244,6 +252,61 @@ public class ProdutoService {
                     this.iProdutoRepository.save(produto);
                     LOGGER.info("Importando produto... id: [{}]");
                 }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void importCSVPorFornecedor(MultipartFile importProdutoPorFornecedor) {
+        String linhaDoArquivo = "";
+        String quebraDeLinha = ";";
+
+        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importProdutoPorFornecedor.getInputStream()))) {
+
+            linhaDoArquivo = leitor.readLine();
+            while ((linhaDoArquivo = leitor.readLine()) != null) {
+                String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
+                Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
+                Optional<CategoriaProduto> categoriaProdutoOptional = Optional.ofNullable(categoriaProdutoService.findByCodigo(produtoCSV[8]));
+
+
+                //Se o produto existe
+                if (produtoOptional.isPresent()) {
+
+                    Produto produtoExixtente = produtoOptional.get();
+                    LOGGER.info("Atualizando produto... id: [{}]", produtoOptional.get());
+
+                    produtoExixtente.setCodigo(gerarCodigoProduto(produtoCSV[0]));
+                    produtoExixtente.setNome(produtoCSV[1]);
+                    produtoExixtente.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
+                    produtoExixtente.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
+                    produtoExixtente.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("[kgm]", "").replace(",", ".")));
+                    produtoExixtente.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[\\d,]", ""));
+                    produtoExixtente.setValidade(LocalDate.parse(produtoCSV[5].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+
+                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[6]);
+                    produtoExixtente.setLinhaCategoriaId(linhaCategoria);
+
+                    this.iProdutoRepository.save(produtoExixtente);
+                    LOGGER.info("Importando produto... id: [{}]");
+                }
+                if (produtoOptional.isPresent() && !(categoriaProdutoOptional.isPresent())) {
+
+                    LOGGER.info("Criando categoria de produto... id: [{}]", categoriaProdutoOptional.get());
+
+                    CategoriaProduto categoriaProduto = new CategoriaProduto();
+                    categoriaProduto.setNome(produtoCSV[9]);
+                    categoriaProduto.setCodigo(produtoCSV[8]);
+
+                    Fornecedor fornecedor = fornecedorService.f(categoriaCSV[3].replaceAll("\\D", ""));
+                    categoriaProduto.setFornecedorId(fornecedor);
+
+                    this.iCategoriaProdutoRepository.save(categoriaProduto);
+                    LOGGER.info("Salvando categoria de produto... id: [{}]");
+                }
+
+
             }
         } catch (IOException e) {
             e.printStackTrace();

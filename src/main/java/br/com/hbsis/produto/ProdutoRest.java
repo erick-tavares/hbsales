@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -23,7 +24,7 @@ public class ProdutoRest {
     }
 
     @PostMapping
-    public ProdutoDTO save(@RequestBody ProdutoDTO produtoDTO) {
+    public ProdutoDTO save(@Valid @RequestBody ProdutoDTO produtoDTO) {
         LOGGER.info("Recebendo solicitação de persistência de produto...");
         LOGGER.debug("Payaload: {}", produtoDTO);
 
@@ -56,6 +57,11 @@ public class ProdutoRest {
     @PostMapping (value = "/import-produtos", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importProduto)throws IOException {
         this.produtoService.importCSV(importProduto);
+    }
+
+    @PostMapping (value = "/import-produtos/{id}", consumes = "multipart/form-data")
+    public void importCSVPorFornecedor (@RequestParam("file") MultipartFile importProdutoPorFornecedor)throws IOException {
+        this.produtoService.importCSVPorFornecedor(importProdutoPorFornecedor);
     }
 
     @RequestMapping("/export-produtos")
