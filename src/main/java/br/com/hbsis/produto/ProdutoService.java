@@ -309,22 +309,9 @@ public class ProdutoService {
 
                 //Se o produto existe
                 if (produtoOptional.isPresent()) {
+                    update (ProdutoDTO.of(Produto), id);
 
-                    Produto produtoExixtente = produtoOptional.get();
 
-                    produtoExixtente.setCodigo(gerarCodigoProduto(produtoCSV[0]));
-                    produtoExixtente.setNome(produtoCSV[1]);
-                    produtoExixtente.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
-                    produtoExixtente.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-                    produtoExixtente.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replace(",", ".")));
-                    produtoExixtente.setUnidadeMedidaPeso(produtoCSV[5]);
-                    produtoExixtente.setValidade(LocalDate.parse(produtoCSV[6].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
-                    produtoExixtente.setLinhaCategoriaId(linhaCategoria);
-
-                    this.iProdutoRepository.save(produtoExixtente);
-                    LOGGER.info("Atualizando produto... id: [{}]", produtoOptional.get());
                 }
 
                 //Se a categoria produto não existe
