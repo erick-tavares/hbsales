@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/linha-categorias")
@@ -22,7 +24,7 @@ public class LinhaCategoriaRest {
     }
 
     @PostMapping
-    public LinhaCategoriaDTO save(@RequestBody LinhaCategoriaDTO linhaCategoriaDTO) {
+    public LinhaCategoriaDTO save(@Valid @RequestBody LinhaCategoriaDTO linhaCategoriaDTO) {
         LOGGER.info("Recebendo solicitação de persistência de linha de categoria...");
         LOGGER.debug("Payaload: {}", linhaCategoriaDTO);
 
@@ -52,15 +54,13 @@ public class LinhaCategoriaRest {
         this.linhaCategoriaService.delete(id);
     }
 
-    //Importando CSV
     @PostMapping (value = "/import-linhas", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importLinhaCategoria)throws IOException {
         this.linhaCategoriaService.importCSV(importLinhaCategoria);
     }
 
-    // Exportando CSV
     @RequestMapping("/export-linhas")
-    public void exportCSV(HttpServletResponse response)throws IOException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 
         this.linhaCategoriaService.exportCSV(response);

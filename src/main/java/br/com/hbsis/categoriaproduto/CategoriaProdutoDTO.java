@@ -1,14 +1,19 @@
 package br.com.hbsis.categoriaproduto;
 
 
+import javax.validation.constraints.NotBlank;
+
 public class CategoriaProdutoDTO {
     private Long id;
+    @NotBlank(message = "nome é obrigatório")
     private String nome;
+    @NotBlank(message = "fornecedorId é obrigatório")
     private Long fornecedorId;
-    private int codigo;
+    @NotBlank(message = "código deve ter entre 1 a 4 números")
+    private String codigo;
 
 
-    public CategoriaProdutoDTO(Long id, String nome, Long fornecedorId, int codigo) {
+    public CategoriaProdutoDTO(Long id, String nome, Long fornecedorId, String codigo) {
         this.id = id;
         this.nome = nome;
         this.fornecedorId = fornecedorId;
@@ -19,7 +24,7 @@ public class CategoriaProdutoDTO {
         return new CategoriaProdutoDTO(
                 categoriaProduto.getId(),
                 categoriaProduto.getNome(),
-                categoriaProduto.getFornecedorId(),
+                categoriaProduto.getFornecedorId().getId(),
                 categoriaProduto.getCodigo()
         );
     }
@@ -58,11 +63,11 @@ public class CategoriaProdutoDTO {
         this.fornecedorId = fornecedorId;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 }

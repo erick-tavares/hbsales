@@ -1,8 +1,10 @@
 CREATE TABLE categoria_produto(
-      id_categoria_produto BIGINT IDENTITY(1, 1) PRIMARY KEY NOT NULL,
-      nome_categoria_produto VARCHAR (255)   NOT NULL,
-      codigo_categoria_produto INT NOT NULL,
+      id BIGINT IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+      nome VARCHAR (255)   NOT NULL,
+      codigo INT NOT NULL,
       fornecedor_id BIGINT NOT NULL,
 
-      CONSTRAINT fk_categoria_fornecedor FOREIGN KEY (fornecedor_id) REFERENCES fornecedor (id_fornecedor)
+      constraint fornecedor_id_nome unique (fornecedor_id,nome),
+
+      CONSTRAINT fk_categoria_fornecedor FOREIGN KEY (fornecedor_id) REFERENCES fornecedor (id)
   );

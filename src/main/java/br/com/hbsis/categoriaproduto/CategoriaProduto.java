@@ -12,10 +12,10 @@ public class CategoriaProduto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nome", nullable = false, length = 255)
+    @Column(name = "nome", nullable = false, length = 50)
     private String nome;
-    @Column(name = "codigo", nullable = false)
-    private int codigo;
+    @Column(name = "codigo",  unique = true, nullable = false)
+    private String codigo;
 
     @ManyToOne
     @JoinColumn(name = "fornecedor_id", referencedColumnName = "id")
@@ -25,8 +25,8 @@ public class CategoriaProduto {
     public CategoriaProduto() {
     }
 
-    public Long getFornecedorId() {
-        return fornecedorId.getId();
+    public Fornecedor getFornecedorId() {
+        return fornecedorId;
     }
 
     public void setFornecedorId(Fornecedor fornecedorId) {
@@ -50,11 +50,11 @@ public class CategoriaProduto {
     }
 
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
