@@ -20,7 +20,6 @@ public class ProdutoDTO {
     private String unidadeMedidaPeso;
     @NotBlank(message = "validade é obrigatória")
     private LocalDate validade;
-    @NotBlank(message = "linhaCategoriaId é obrigatório")
     private Long linhaCategoriaId;
 
 
