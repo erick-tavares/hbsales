@@ -60,8 +60,8 @@ public class ProdutoRest {
     }
 
     @PostMapping (value = "/import-produtos/{id}", consumes = "multipart/form-data")
-    public void importCSVPorFornecedor (@RequestParam("file") MultipartFile importProdutoPorFornecedor)throws IOException {
-        this.produtoService.importCSVPorFornecedor(importProdutoPorFornecedor);
+    public void importCSVPorFornecedor (@RequestParam("file") MultipartFile importProdutoPorFornecedor, @PathVariable("id") Long id)throws IOException {
+        this.produtoService.importCSVPorFornecedor(importProdutoPorFornecedor, id);
     }
 
     @RequestMapping("/export-produtos")
