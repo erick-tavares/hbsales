@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,16 +80,6 @@ public class LinhaCategoriaService {
             return linhaCategoriaOptional.get();
         }
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
-    }
-
-    public Optional<LinhaCategoria> findByIdOptional(Long id) {
-        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
-
-        if (linhaCategoriaOptional.isPresent()) {
-            return linhaCategoriaOptional;
-        }
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
     public LinhaCategoriaDTO findById(Long id) {

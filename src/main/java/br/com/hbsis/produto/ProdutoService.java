@@ -1,9 +1,11 @@
 package br.com.hbsis.produto;
 
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
+import br.com.hbsis.categoriaproduto.CategoriaProdutoDTO;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import br.com.hbsis.categoriaproduto.ICategoriaProdutoRepository;
 import br.com.hbsis.fornecedor.FornecedorService;
+import br.com.hbsis.linhacategoria.ILinhaCategoriaRepository;
 import br.com.hbsis.linhacategoria.LinhaCategoria;
 import br.com.hbsis.linhacategoria.LinhaCategoriaDTO;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
@@ -15,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.MaskFormatter;
-import javax.validation.constraints.Size;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,14 +34,14 @@ public class ProdutoService {
 
     private final IProdutoRepository iProdutoRepository;
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
-    private final ICategoriaProdutoRepository iLinhaCategoriaRepository;
+    private final ILinhaCategoriaRepository iLinhaCategoriaRepository;
     private final LinhaCategoriaService linhaCategoriaService;
     private final CategoriaProdutoService categoriaProdutoService;
     private final FornecedorService fornecedorService;
 
 
     public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService, CategoriaProdutoService categoriaProdutoService,
-                          FornecedorService fornecedorService, ICategoriaProdutoRepository iCategoriaProdutoRepository, ICategoriaProdutoRepository iLinhaCategoriaRepository) {
+                          FornecedorService fornecedorService, ICategoriaProdutoRepository iCategoriaProdutoRepository, ILinhaCategoriaRepository iLinhaCategoriaRepository) {
         this.iProdutoRepository = iProdutoRepository;
         this.linhaCategoriaService = linhaCategoriaService;
         this.categoriaProdutoService = categoriaProdutoService;
@@ -160,7 +161,6 @@ public class ProdutoService {
             produtoExistente.setPesoPorUnidade(produtoDTO.getPesoPorUnidade());
             produtoExistente.setUnidadeMedidaPeso(produtoDTO.getUnidadeMedidaPeso());
             produtoExistente.setValidade(produtoDTO.getValidade());
-
             produtoExistente.setLinhaCategoriaId(linhaCategoriaService.findLinhaCategoriaById(produtoDTO.getLinhaCategoriaId()));
 
             produtoExistente = this.iProdutoRepository.save(produtoExistente);
@@ -275,7 +275,7 @@ public class ProdutoService {
         }
     }
 
-    public void importCSVPorFornecedor(MultipartFile importProdutoPorFornecedor, Long id) {
+    public void importCSVPorFornecedor(MultipartFile importProdutoPorFornecedor, Long id)throws IOException{
         String linhaDoArquivo = "";
         String quebraDeLinha = ";";
 
@@ -284,13 +284,57 @@ public class ProdutoService {
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
-                Optional<LinhaCategoria> linhaCategoriaOptional = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[7]));
-                Optional<CategoriaProduto> categoriaProdutoOptional = Optional.ofNullable(categoriaProdutoService.findByCodigo(produtoCSV[9]));
 
+                Optional<CategoriaProduto> categoriaProdutoExistente = iCategoriaProdutoRepository.findByCodigo(produtoCSV[8]);
+                if (!(categoriaProdutoExistente.isPresent())) {
 
-                //Se o produto não existe
-                if (!(produtoOptional.isPresent())) {
+                    CategoriaProduto categoriaProduto = new CategoriaProduto();
+                    categoriaProduto.setNome(produtoCSV[10]);
+                    categoriaProduto.setCodigo(produtoCSV[9]);
+                    categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
+
+                    this.iCategoriaProdutoRepository.save(categoriaProduto);
+                    LOGGER.info("Criando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
+
+                }else if (categoriaProdutoExistente.isPresent()) {
+
+                    CategoriaProduto categoriaProduto = categoriaProdutoExistente.get();
+                    categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
+
+                    this.iCategoriaProdutoRepository.save(categoriaProduto);
+                    LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
+                }
+                Optional<LinhaCategoria> linhaCategoriaExistente = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[7]));
+             //   Optional<LinhaCategoria> linhaCategoriaExistente = iLinhaCategoriaRepository.findByCodigo(produtoCSV[7]);
+                if (!(linhaCategoriaExistente.isPresent())) {
+
+                    LinhaCategoria linhaCategoria = new LinhaCategoria();
+                    linhaCategoria.setNome(produtoCSV[8]);
+                    linhaCategoria.setCodigo(produtoCSV[7]);
+                    linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(id));
+
+                    this.iLinhaCategoriaRepository.save(linhaCategoria);
+                    LOGGER.info("Criando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
+                    
+                }else if (linhaCategoriaExistente.isPresent()) {
+
+                    LinhaCategoria linhaCategoria = linhaCategoriaExistente.get();
+                    linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[7]).getId()));
+
+                    this.iLinhaCategoriaRepository.save(linhaCategoria);
+                    LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
+                }
+
+                Optional<Produto> produtoExistente = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
+                if (produtoExistente.isPresent()) {
+                    Produto produto = produtoExistente.get();
+                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
+                    produto.setLinhaCategoriaId(linhaCategoria);
+
+                    this.update(ProdutoDTO.of(produto), this.findByCodigo(produtoCSV[0]).getId());
+                    LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
+
+                } else if (!(produtoExistente.isPresent())) {
                     Produto produto = new Produto();
                     produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
                     produto.setNome(produtoCSV[1]);
@@ -304,67 +348,7 @@ public class ProdutoService {
                     produto.setLinhaCategoriaId(linhaCategoria);
 
                     this.iProdutoRepository.save(produto);
-                    LOGGER.info("Criando produto... id: [{}]");
-                }
-
-                //Se o produto existe
-                if (produtoOptional.isPresent()) {
-                    update (ProdutoDTO.of(Produto), id);
-
-
-                }
-
-                //Se a categoria produto não existe
-                if (produtoOptional.isPresent() && !(categoriaProdutoOptional.isPresent())) {
-
-                    CategoriaProduto categoriaProduto = new CategoriaProduto();
-                    categoriaProduto.setNome(produtoCSV[9]);
-                    categoriaProduto.setCodigo(produtoCSV[8]);
-
-                    categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
-
-                    this.iCategoriaProdutoRepository.save(categoriaProduto);
-                    LOGGER.info("Criando categoria de produto... id: [{}]", categoriaProdutoOptional.get());
-                }
-
-                //Se a categoria produto existe
-                if (produtoOptional.isPresent() && categoriaProdutoOptional.isPresent()) {
-
-                    CategoriaProduto categoriaProdutoExiste = categoriaProdutoOptional.get();
-
-                    categoriaProdutoExiste.setNome(produtoCSV[10]);
-                    categoriaProdutoExiste.setCodigo(produtoCSV[9]);
-
-                    categoriaProdutoExiste.setFornecedorId(fornecedorService.findFornecedorById(id));
-
-                    this.iCategoriaProdutoRepository.save(categoriaProdutoExiste);
-                    LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoOptional.get());
-                }
-
-                //Se a linha da categoria não existe
-                if (produtoOptional.isPresent() && !(linhaCategoriaOptional.isPresent())) {
-
-                    LinhaCategoria linhaCategoria = new LinhaCategoria();
-                    linhaCategoria.setNome(produtoCSV[8]);
-                    linhaCategoria.setCodigo(produtoCSV[7]);
-
-                    linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(id));
-
-                    this.linhaCategoriaService.save(LinhaCategoriaDTO.of(linhaCategoria));
-                    LOGGER.info("Criando linha de categoria ... id: [{}]", linhaCategoriaOptional.get());
-                }
-
-                //Se a linha da categoria existe
-                if (produtoOptional.isPresent() && linhaCategoriaOptional.isPresent()) {
-
-                    LinhaCategoria linhaCategoriaExiste = linhaCategoriaOptional.get();
-                    linhaCategoriaExiste.setNome(produtoCSV[8]);
-                    linhaCategoriaExiste.setCodigo(produtoCSV[7]);
-
-                    linhaCategoriaExiste.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(id));
-
-                    this.linhaCategoriaService.save(LinhaCategoriaDTO.of(linhaCategoriaExiste));
-                    LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaOptional.get());
+                    LOGGER.info("Criando produto... id: [{}]", produtoExistente.get().getCodigo());
                 }
             }
         } catch (IOException e) {
