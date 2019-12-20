@@ -1,13 +1,11 @@
 package br.com.hbsis.produto;
 
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
-import br.com.hbsis.categoriaproduto.CategoriaProdutoDTO;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import br.com.hbsis.categoriaproduto.ICategoriaProdutoRepository;
 import br.com.hbsis.fornecedor.FornecedorService;
 import br.com.hbsis.linhacategoria.ILinhaCategoriaRepository;
 import br.com.hbsis.linhacategoria.LinhaCategoria;
-import br.com.hbsis.linhacategoria.LinhaCategoriaDTO;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -117,6 +115,9 @@ public class ProdutoService {
         }
         if (StringUtils.isEmpty(String.valueOf(produtoDTO.getValidade()))) {
             throw new IllegalArgumentException("Validade não deve ser nula/vazia");
+        }
+        if (StringUtils.isEmpty(String.valueOf(produtoDTO.getLinhaCategoriaId()))) {
+            throw new IllegalArgumentException("LinhaCategoriaId não deve ser nulo/vazio");
         }
     }
 

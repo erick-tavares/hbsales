@@ -79,6 +79,9 @@ public class CategoriaProdutoService {
         if (!(StringUtils.isNumeric(categoriaProdutoDTO.getCodigo()))) {
             throw new IllegalArgumentException("Código deve ser apenas números");
         }
+        if (StringUtils.isEmpty(String.valueOf(categoriaProdutoDTO.getFornecedorId()))) {
+            throw new IllegalArgumentException("FornecedorId não deve ser nulo/vazio");
+        }
     }
 
     public List<CategoriaProduto> listarCategoria() {
@@ -148,16 +151,6 @@ public class CategoriaProdutoService {
             return categoriaProdutoOptional.get();
         }
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
-    }
-
-    public Optional<CategoriaProduto> findByIdOptional(Long id) {
-        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
-
-        if (categoriaProdutoOptional.isPresent()) {
-            return categoriaProdutoOptional;
-        }
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
     public CategoriaProdutoDTO findById(Long id) {
