@@ -5,15 +5,10 @@ import java.time.LocalDate;
 
 public class PeriodoVendasDTO {
     private Long id;
-     @NotBlank (message = "o inicioVendas é obrigatório")
     private LocalDate inicioVendas;
-     @NotBlank (message = "o fimVendas é obrigatório")
     private LocalDate fimVendas;
-     @NotBlank (message = "o retiradaPedido é obrigatório")
     private LocalDate retiradaPedido;
-     @NotBlank (message = "a descricao é obrigatória")
     private String descricao;
-     @NotBlank (message = "o fornecedorId é obrigatório")
     private Long fornecedorId;
 
     public PeriodoVendasDTO(Long id, LocalDate inicioVendas, LocalDate fimVendas, LocalDate retiradaPedido, String descricao, Long fornecedorId) {
