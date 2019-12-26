@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +41,7 @@ public class LinhaCategoriaService {
 
         linhaCategoria = this.iLinhaCategoriaRepository.save(linhaCategoria);
 
-        return linhaCategoriaDTO.of(linhaCategoria);
+        return LinhaCategoriaDTO.of(linhaCategoria);
     }
 
     private void validate(LinhaCategoriaDTO linhaCategoriaDTO) {
@@ -58,13 +57,16 @@ public class LinhaCategoriaService {
         if (StringUtils.isEmpty(linhaCategoriaDTO.getCodigo())) {
             throw new IllegalArgumentException("Código não deve ser nula/vazia");
         }
+        if (StringUtils.isEmpty(String.valueOf(linhaCategoriaDTO.getCategoriaId()))) {
+            throw new IllegalArgumentException("CategoriaId não deve ser nulo/vazio");
+        }
     }
 
 
     public String gerarCodigoLinhaCategoria(String codigoDoUsuario) {
 
         String codigoGerado = String.format("%10s", codigoDoUsuario).toUpperCase();
-        codigoGerado = codigoGerado.replace(' ','0');
+        codigoGerado = codigoGerado.replace(' ', '0');
 
         return codigoGerado;
     }
@@ -81,16 +83,6 @@ public class LinhaCategoriaService {
             return linhaCategoriaOptional.get();
         }
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
-    }
-
-    public Optional<LinhaCategoria> findByIdOptional(Long id) {
-        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
-
-        if (linhaCategoriaOptional.isPresent()) {
-            return linhaCategoriaOptional;
-        }
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
     public LinhaCategoriaDTO findById(Long id) {
@@ -179,22 +171,22 @@ public class LinhaCategoriaService {
                 Optional<LinhaCategoria> linhaCategoriaExisteOptional = this.iLinhaCategoriaRepository.findByCodigo(linhaCategoriaCSV[0]);
 
 
-                    if (!(linhaCategoriaExisteOptional.isPresent()) && categoriaProdutoOptional.isPresent()) {
-                        LinhaCategoria linhaCategoria = new LinhaCategoria();
-                        linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaCSV[0]));
-                        linhaCategoria.setNome(linhaCategoriaCSV[1]);
+                if (!(linhaCategoriaExisteOptional.isPresent()) && categoriaProdutoOptional.isPresent()) {
+                    LinhaCategoria linhaCategoria = new LinhaCategoria();
+                    linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaCSV[0]));
+                    linhaCategoria.setNome(linhaCategoriaCSV[1]);
 
-                        CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
-                        linhaCategoria.setCategoriaId(categoriaProduto);
+                    CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
+                    linhaCategoria.setCategoriaId(categoriaProduto);
 
-                        this.iLinhaCategoriaRepository.save(linhaCategoria);
-                        LOGGER.info("Importando linha de categoria... id: [{}]");
-                    }
+                    this.iLinhaCategoriaRepository.save(linhaCategoria);
+                    LOGGER.info("Importando linha de categoria... id: [{}]");
                 }
-
-            } catch(IOException e){
-                e.printStackTrace();
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

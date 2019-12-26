@@ -2,7 +2,6 @@ package br.com.hbsis.linhacategoria;
 
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "linha_categoria")
@@ -11,8 +10,7 @@ public class LinhaCategoria {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "codigo", unique = true, nullable = false)
-    @Size (min = 10 , max= 10)
+    @Column(name = "codigo", unique = true, nullable = false, length = 10)
     private String codigo;
     @Column (name = "nome", nullable = false, length = 50)
     private String nome;
