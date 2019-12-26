@@ -305,8 +305,7 @@ public class ProdutoService {
                     this.iCategoriaProdutoRepository.save(categoriaProduto);
                     LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
                 }
-                Optional<LinhaCategoria> linhaCategoriaExistente = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[7]));
-             //   Optional<LinhaCategoria> linhaCategoriaExistente = iLinhaCategoriaRepository.findByCodigo(produtoCSV[7]);
+                Optional<LinhaCategoria> linhaCategoriaExistente = iLinhaCategoriaRepository.findByCodigo(produtoCSV[7]);
                 if (!(linhaCategoriaExistente.isPresent())) {
 
                     LinhaCategoria linhaCategoria = new LinhaCategoria();
@@ -335,7 +334,7 @@ public class ProdutoService {
                     this.update(ProdutoDTO.of(produto), this.findByCodigo(produtoCSV[0]).getId());
                     LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
 
-                } else if (!(produtoExistente.isPresent())) {
+                } else {
                     Produto produto = new Produto();
                     produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
                     produto.setNome(produtoCSV[1]);
@@ -347,6 +346,8 @@ public class ProdutoService {
 
                     LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
                     produto.setLinhaCategoriaId(linhaCategoria);
+
+                    save(ProdutoDTO.of(produto));
 
                     this.iProdutoRepository.save(produto);
                     LOGGER.info("Criando produto... id: [{}]", produtoExistente.get().getCodigo());
