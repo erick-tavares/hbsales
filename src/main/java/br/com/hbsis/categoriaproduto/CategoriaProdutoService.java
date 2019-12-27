@@ -26,7 +26,7 @@ public class CategoriaProdutoService {
     private final FornecedorService fornecedorService;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, @Lazy FornecedorService fornecedorService) {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
     }
@@ -40,7 +40,7 @@ public class CategoriaProdutoService {
         fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
         String codigoGerado = "";
-        codigoGerado = String.format("%03d", codigoDoUsuario).toUpperCase();
+        codigoGerado =  StringUtils.leftPad(codigoDoUsuario.toUpperCase(),3,"0");
 
         codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
 
@@ -85,9 +85,8 @@ public class CategoriaProdutoService {
         }
     }
 
-    public List<CategoriaProduto> listarCategoria() {
-        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAll();
-        return categoriaProduto;
+    public List<CategoriaProduto> listarCategoria(Long fornecedorId) {
+        return this.iCategoriaProdutoRepository.findByFornecedorId_Id(fornecedorId);
     }
 
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
@@ -105,7 +104,7 @@ public class CategoriaProdutoService {
         String header = "Nome;Código;Razão social;CNPJ";
         printWriter.println(header);
 
-        for (CategoriaProduto categoriaCSVObjeto : listarCategoria()) {
+        for (CategoriaProduto categoriaCSVObjeto : this.iCategoriaProdutoRepository.findAll()) {
             String categoriaNome = categoriaCSVObjeto.getNome();
             String categoriaCodigo = categoriaCSVObjeto.getCodigo();
             String razaoSocial = categoriaCSVObjeto.getFornecedorId().getRazaoSocial();
@@ -146,12 +145,12 @@ public class CategoriaProdutoService {
     }
 
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
-        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByFornecedorId(fornecedorId);
+        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findByFornecedorId_Id(fornecedorId);
 
-        if (categoriaProdutoOptional.isPresent()) {
-            return categoriaProdutoOptional.get();
+        if (categoriaProduto != null ) {
+            return (CategoriaProduto) categoriaProduto;
         }
-        throw new IllegalArgumentException(String.format("Código %s não existe", fornecedorId));
+        throw new IllegalArgumentException(String.format("Id %s não existe"));
     }
 
     public CategoriaProduto findByCodigo(String codigo) {
