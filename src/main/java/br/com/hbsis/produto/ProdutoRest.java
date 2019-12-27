@@ -55,7 +55,7 @@ public class ProdutoRest {
     }
 
     @PostMapping (value = "/import-produtos", consumes = "multipart/form-data")
-    public void importCSV (@RequestParam("file") MultipartFile importProduto)throws IOException {
+    public void importCSV (@RequestParam("file") MultipartFile importProduto) {
         this.produtoService.importCSV(importProduto);
     }
 
@@ -64,7 +64,7 @@ public class ProdutoRest {
         this.produtoService.importCSVPorFornecedor(importProdutoPorFornecedor, id);
     }
 
-    @RequestMapping("/export-produtos")
+    @GetMapping("/export-produtos")
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 

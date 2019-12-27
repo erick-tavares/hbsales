@@ -41,11 +41,11 @@ public class CategoriaProdutoRest {
     }
 
     @PostMapping(value = "/import-categorias", consumes = "multipart/form-data")
-    public void importCSV(@RequestParam("file") MultipartFile importCategoria) throws IOException {
+    public void importCSV(@RequestParam("file") MultipartFile importCategoria) {
         this.categoriaProdutoService.importCSV(importCategoria);
     }
 
-    @RequestMapping("/export-categorias")
+    @GetMapping("/export-categorias")
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 
