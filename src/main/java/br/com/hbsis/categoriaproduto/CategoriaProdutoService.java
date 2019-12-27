@@ -3,7 +3,6 @@ package br.com.hbsis.categoriaproduto;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
-import br.com.hbsis.fornecedor.IFornecedorRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +22,10 @@ public class CategoriaProdutoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoriaProdutoService.class);
 
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
-    private final IFornecedorRepository iFornecedorRepository;
     private final FornecedorService fornecedorService;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, IFornecedorRepository iFornecedorRepository, FornecedorService fornecedorService) {
-        this.iFornecedorRepository = iFornecedorRepository;
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
     }
@@ -147,6 +144,15 @@ public class CategoriaProdutoService {
         }
     }
 
+    public CategoriaProduto findByFornecedorId(Long id) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByFornecedorId(id);
+
+        if (categoriaProdutoOptional.isPresent()) {
+            return categoriaProdutoOptional.get();
+        }
+        throw new IllegalArgumentException(String.format("Código %s não existe", id));
+    }
+
     public CategoriaProduto findByCodigo(String codigo) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
 
@@ -204,4 +210,5 @@ public class CategoriaProdutoService {
 
         this.iCategoriaProdutoRepository.deleteById(id);
     }
+
 }

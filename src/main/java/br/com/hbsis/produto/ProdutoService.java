@@ -3,11 +3,9 @@ package br.com.hbsis.produto;
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoDTO;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
-import br.com.hbsis.categoriaproduto.ICategoriaProdutoRepository;
 import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
-import br.com.hbsis.fornecedor.IFornecedorRepository;
-import br.com.hbsis.linhacategoria.ILinhaCategoriaRepository;
 import br.com.hbsis.linhacategoria.LinhaCategoria;
 import br.com.hbsis.linhacategoria.LinhaCategoriaDTO;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
@@ -35,23 +33,17 @@ public class ProdutoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoService.class);
 
     private final IProdutoRepository iProdutoRepository;
-    private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
-    private final ILinhaCategoriaRepository iLinhaCategoriaRepository;
-    private final IFornecedorRepository iFornecedorRepository;
     private final LinhaCategoriaService linhaCategoriaService;
     private final CategoriaProdutoService categoriaProdutoService;
     private final FornecedorService fornecedorService;
 
 
-    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService, CategoriaProdutoService categoriaProdutoService,
-                          FornecedorService fornecedorService, ICategoriaProdutoRepository iCategoriaProdutoRepository, ILinhaCategoriaRepository iLinhaCategoriaRepository, IFornecedorRepository iFornecedorRepository) {
+    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService,
+                          CategoriaProdutoService categoriaProdutoService, FornecedorService fornecedorService) {
         this.iProdutoRepository = iProdutoRepository;
         this.linhaCategoriaService = linhaCategoriaService;
         this.categoriaProdutoService = categoriaProdutoService;
         this.fornecedorService = fornecedorService;
-        this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
-        this.iLinhaCategoriaRepository = iLinhaCategoriaRepository;
-        this.iFornecedorRepository = iFornecedorRepository;
     }
 
 
@@ -295,11 +287,11 @@ public class ProdutoService {
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
 
-                Optional<CategoriaProduto> categoriaProdutoExistente = iCategoriaProdutoRepository.findByCodigo(produtoCSV[9]);
-                Optional<Fornecedor> fornecedorExiste = iFornecedorRepository.findById(id);
+                Optional<CategoriaProduto> categoriaProdutoExistente = Optional.ofNullable(categoriaProdutoService.findByCodigo(produtoCSV[9]));
+                FornecedorDTO fornecedorExiste = fornecedorService.findById(id);
 
                 try {
-                    if (!(categoriaProdutoExistente.isPresent() && fornecedorExiste.isPresent())) {
+                    if (!(categoriaProdutoExistente.isPresent() && fornecedorExiste != null )) {
 
                         CategoriaProduto categoriaProduto = new CategoriaProduto();
                         categoriaProduto.setNome(produtoCSV[10]);
@@ -321,7 +313,7 @@ public class ProdutoService {
                     e.printStackTrace();
                 }
 
-                Optional<LinhaCategoria> linhaCategoriaExistente = iLinhaCategoriaRepository.findByCodigo(produtoCSV[7]);
+                Optional<LinhaCategoria> linhaCategoriaExistente = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[7]));
                 try {
                     if (!(linhaCategoriaExistente.isPresent())) {
 

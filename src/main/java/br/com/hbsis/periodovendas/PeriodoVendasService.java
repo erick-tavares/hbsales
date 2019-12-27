@@ -1,6 +1,5 @@
 package br.com.hbsis.periodovendas;
 
-import br.com.hbsis.fornecedor.IFornecedorRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +17,10 @@ public class PeriodoVendasService {
 
     private final IPeriodoVendasRepository iPeriodoVendasRepository;
     private final FornecedorService fornecedorService;
-    private final IFornecedorRepository iFornecedorRepository;
 
-    public PeriodoVendasService(IPeriodoVendasRepository iPeriodoVendasRepository, FornecedorService fornecedorService, IFornecedorRepository iFornecedorRepository) {
+    public PeriodoVendasService(IPeriodoVendasRepository iPeriodoVendasRepository, FornecedorService fornecedorService) {
         this.iPeriodoVendasRepository = iPeriodoVendasRepository;
         this.fornecedorService = fornecedorService;
-        this.iFornecedorRepository = iFornecedorRepository;
     }
 
     public PeriodoVendasDTO save(PeriodoVendasDTO periodoVendasDTO) {
