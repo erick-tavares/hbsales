@@ -55,29 +55,6 @@ public class ProdutoService {
     }
 
 
-    public ProdutoDTO save(ProdutoDTO produtoDTO) {
-
-        this.validate(produtoDTO);
-
-        LOGGER.info("Salvando produto");
-        LOGGER.debug("Produto: {}", produtoDTO);
-
-        Produto produto = new Produto();
-        produto.setCodigo(gerarCodigoProduto(produtoDTO.getCodigo()));
-        produto.setNome(produtoDTO.getNome());
-        produto.setPreco(produtoDTO.getPreco());
-        produto.setUnidadePorCaixa(produtoDTO.getUnidadePorCaixa());
-        produto.setPesoPorUnidade(produtoDTO.getPesoPorUnidade());
-        produto.setUnidadeMedidaPeso(produtoDTO.getUnidadeMedidaPeso());
-        produto.setValidade(produtoDTO.getValidade());
-
-        produto.setLinhaCategoriaId(linhaCategoriaService.findLinhaCategoriaById(produtoDTO.getLinhaCategoriaId()));
-
-        produto = this.iProdutoRepository.save(produto);
-
-        return produtoDTO.of(produto);
-    }
-
     private void validate(ProdutoDTO produtoDTO) {
         LOGGER.info("Validando produto");
 
@@ -99,9 +76,6 @@ public class ProdutoService {
         }
         if (StringUtils.isEmpty(String.valueOf(produtoDTO.getPreco()))) {
             throw new IllegalArgumentException("Preço não deve ser nulo/vazio");
-        }
-        if (!(StringUtils.isNumeric(String.valueOf(produtoDTO.getPreco())))) {
-            throw new IllegalArgumentException("Preço deve conter apenas números");
         }
         if (StringUtils.isEmpty(String.valueOf(produtoDTO.getUnidadePorCaixa()))) {
             throw new IllegalArgumentException("UnidadePorCaixa não deve ser nulo/vazio");
@@ -148,6 +122,28 @@ public class ProdutoService {
             return produtoOptional.get();
         }
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
+    }
+
+    public ProdutoDTO save(ProdutoDTO produtoDTO) {
+
+        this.validate(produtoDTO);
+
+        LOGGER.info("Salvando produto");
+        LOGGER.debug("Produto: {}", produtoDTO);
+
+        Produto produto = new Produto();
+        produto.setCodigo(gerarCodigoProduto(produtoDTO.getCodigo()));
+        produto.setNome(produtoDTO.getNome());
+        produto.setPreco(produtoDTO.getPreco());
+        produto.setUnidadePorCaixa(produtoDTO.getUnidadePorCaixa());
+        produto.setPesoPorUnidade(produtoDTO.getPesoPorUnidade());
+        produto.setUnidadeMedidaPeso(produtoDTO.getUnidadeMedidaPeso());
+        produto.setValidade(produtoDTO.getValidade());
+        produto.setLinhaCategoriaId(linhaCategoriaService.findLinhaCategoriaById(produtoDTO.getLinhaCategoriaId()));
+
+        produto = this.iProdutoRepository.save(produto);
+
+        return produtoDTO.of(produto);
     }
 
     public ProdutoDTO update(ProdutoDTO produtoDTO, Long id) {
@@ -293,7 +289,7 @@ public class ProdutoService {
         String linhaDoArquivo = "";
         String quebraDeLinha = ";";
 
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importProdutoPorFornecedor.getInputStream()))) {
+        BufferedReader leitor = new BufferedReader(new InputStreamReader(importProdutoPorFornecedor.getInputStream()));
 
             linhaDoArquivo = leitor.readLine();
             while ((linhaDoArquivo = leitor.readLine()) != null) {
@@ -301,80 +297,91 @@ public class ProdutoService {
 
                 Optional<CategoriaProduto> categoriaProdutoExistente = iCategoriaProdutoRepository.findByCodigo(produtoCSV[9]);
                 Optional<Fornecedor> fornecedorExiste = iFornecedorRepository.findById(id);
-                if (!(categoriaProdutoExistente.isPresent() && fornecedorExiste.isPresent())) {
 
-                    CategoriaProduto categoriaProduto = new CategoriaProduto();
-                    categoriaProduto.setNome(produtoCSV[10]);
-                    categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
-                    categoriaProduto.setCodigo(produtoCSV[9]);
+                try {
+                    if (!(categoriaProdutoExistente.isPresent() && fornecedorExiste.isPresent())) {
 
-                    categoriaProdutoService.save(CategoriaProdutoDTO.of(categoriaProduto));
-                    LOGGER.info("Criando nova categoria de produto");
+                        CategoriaProduto categoriaProduto = new CategoriaProduto();
+                        categoriaProduto.setNome(produtoCSV[10]);
+                        categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
+                        categoriaProduto.setCodigo(produtoCSV[9]);
 
-                }else if (categoriaProdutoExistente.isPresent()) {
+                        categoriaProdutoService.save(CategoriaProdutoDTO.of(categoriaProduto));
+                        LOGGER.info("Criando nova categoria de produto");
 
-                    CategoriaProduto categoriaProduto = categoriaProdutoExistente.get();
-                    categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
+                    } else if (categoriaProdutoExistente.isPresent()) {
 
-                    categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProduto), categoriaProdutoExistente.get().getId());
-                    LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
+                        CategoriaProduto categoriaProduto = categoriaProdutoExistente.get();
+                        categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
+
+                        categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProduto), categoriaProdutoExistente.get().getId());
+                        LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 Optional<LinhaCategoria> linhaCategoriaExistente = iLinhaCategoriaRepository.findByCodigo(produtoCSV[7]);
-                if (!(linhaCategoriaExistente.isPresent())) {
+                try {
+                    if (!(linhaCategoriaExistente.isPresent())) {
 
-                    LinhaCategoria linhaCategoria = new LinhaCategoria();
-                    linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(produtoCSV[7]));
-                    linhaCategoria.setNome(produtoCSV[8]);
-                    linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
-                    //linhaCategoria.setCategoriaId(categoriaProdutoExistente.get());
+                        LinhaCategoria linhaCategoria = new LinhaCategoria();
+                        linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(produtoCSV[7]));
+                        linhaCategoria.setNome(produtoCSV[8]);
+                        linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
+                        //linhaCategoria.setCategoriaId(categoriaProdutoExistente.get());
 
-                    linhaCategoriaService.save(LinhaCategoriaDTO.of(linhaCategoria));
-                    // this.iLinhaCategoriaRepository.save(linhaCategoria);
-                    LOGGER.info("Criando nova linha de categoria");
+                        linhaCategoriaService.save(LinhaCategoriaDTO.of(linhaCategoria));
+                        // this.iLinhaCategoriaRepository.save(linhaCategoria);
+                        LOGGER.info("Criando nova linha de categoria");
 
-                }else if (linhaCategoriaExistente.isPresent()) {
+                    } else if (linhaCategoriaExistente.isPresent()) {
 
-                    LinhaCategoria linhaCategoria = linhaCategoriaExistente.get();
-                    linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
+                        LinhaCategoria linhaCategoria = linhaCategoriaExistente.get();
+                        linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
 
-                    this.iLinhaCategoriaRepository.save(linhaCategoria);
-                    LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
+                        linhaCategoriaService.update(LinhaCategoriaDTO.of(linhaCategoria), linhaCategoriaExistente.get().getId());
+                        LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 Optional<Produto> produtoExistente = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
-                if (!(produtoExistente.isPresent() && linhaCategoriaExistente.isPresent())) {
-                    Produto produto = new Produto();
-                    produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
-                    produto.setNome(produtoCSV[1]);
-                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
-                    produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replace(",", ".")));
-                    produto.setUnidadeMedidaPeso(produtoCSV[5]);
-                    produto.setValidade(LocalDate.parse(produtoCSV[6].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
-                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
-                    produto.setLinhaCategoriaId(linhaCategoria);
 
-                    save(ProdutoDTO.of(produto));
+                try {
+                    if (!(produtoExistente.isPresent() && linhaCategoriaExistente.isPresent())) {
+                        Produto produto = new Produto();
+                        produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
+                        produto.setNome(produtoCSV[1]);
+                        produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
+                        produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
+                        produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replace(",", ".")));
+                        produto.setUnidadeMedidaPeso(produtoCSV[5]);
+                        produto.setValidade(LocalDate.parse(produtoCSV[6].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
-                    //this.iProdutoRepository.save(produto);
-                    LOGGER.info("Criando novo produto");
+                        LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
+                        produto.setLinhaCategoriaId(linhaCategoria);
 
-                } else {
+                       // save(ProdutoDTO.of(produto));
 
-                    Produto produto = produtoExistente.get();
-                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
-                    produto.setLinhaCategoriaId(linhaCategoria);
+                        this.iProdutoRepository.save(produto);
+                        LOGGER.info("Criando novo produto");
 
-                    this.update(ProdutoDTO.of(produto), this.findByCodigo(produtoCSV[0]).getId());
-                    LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
+                    } else {
+
+                        Produto produto = produtoExistente.get();
+                        LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
+                        produto.setLinhaCategoriaId(linhaCategoria);
+
+                        this.update(ProdutoDTO.of(produto), this.findByCodigo(produtoCSV[0]).getId());
+                        LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

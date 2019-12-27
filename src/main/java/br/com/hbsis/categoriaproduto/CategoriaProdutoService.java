@@ -3,6 +3,7 @@ package br.com.hbsis.categoriaproduto;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
+import br.com.hbsis.fornecedor.IFornecedorRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,12 @@ public class CategoriaProdutoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoriaProdutoService.class);
 
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
+    private final IFornecedorRepository iFornecedorRepository;
     private final FornecedorService fornecedorService;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, IFornecedorRepository iFornecedorRepository, FornecedorService fornecedorService) {
+        this.iFornecedorRepository = iFornecedorRepository;
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
     }
@@ -39,7 +42,7 @@ public class CategoriaProdutoService {
         fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
         String codigoGerado = "";
-        codigoGerado = String.format("%03d", Integer.parseInt(codigoDoUsuario)).toUpperCase();
+        codigoGerado = String.format("%03d", codigoDoUsuario).toUpperCase();
 
         codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
 

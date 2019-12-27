@@ -1,5 +1,9 @@
 package br.com.hbsis.fornecedor;
 
+import br.com.hbsis.categoriaproduto.CategoriaProduto;
+import br.com.hbsis.categoriaproduto.CategoriaProdutoDTO;
+import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
+import br.com.hbsis.categoriaproduto.ICategoriaProdutoRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +17,13 @@ public class FornecedorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(br.com.hbsis.fornecedor.FornecedorService.class);
 
     private final IFornecedorRepository iFornecedorRepository;
+    private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
+    private final CategoriaProdutoService categoriaProdutoService;
 
-    public FornecedorService(IFornecedorRepository iFornecedorRepository) {
+    public FornecedorService(IFornecedorRepository iFornecedorRepository, ICategoriaProdutoRepository iCategoriaProdutoRepository, CategoriaProdutoService categoriaProdutoService) {
         this.iFornecedorRepository = iFornecedorRepository;
+        this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
+        this.categoriaProdutoService = categoriaProdutoService;
     }
 
     public FornecedorDTO save(FornecedorDTO fornecedorDTO) {
@@ -76,6 +84,15 @@ public class FornecedorService {
         }
     }
 
+    public CategoriaProduto findByFornecedorId(Long fornecedorId) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(fornecedorId);
+
+        if (categoriaProdutoOptional.isPresent()) {
+            return categoriaProdutoOptional.get();
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", fornecedorId));
+    }
 
     public Fornecedor findByCnpj(String cnpj) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findByCnpj(cnpj);
@@ -108,6 +125,7 @@ public class FornecedorService {
 
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
+        Optional<CategoriaProduto> categoriProdutoExistenteOptional = iCategoriaProdutoRepository.findByFornecedorId(id);
 
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
@@ -122,6 +140,14 @@ public class FornecedorService {
             fornecedorExistente.setEndereco(fornecedorDTO.getEndereco());
             fornecedorExistente.setTelefone(fornecedorDTO.getTelefone());
             fornecedorExistente.setEmail(fornecedorDTO.getEmail());
+
+            if (categoriProdutoExistenteOptional.isPresent()){
+                CategoriaProduto categoriaProdutoExistente = findByFornecedorId(id);
+                categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProdutoExistente),id);
+            }
+
+
+          //  categoriaProdutoService.findById(id).setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(), categoriaProdutoDTO.getCodigo()));
 
             fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
 
