@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ILinhaCategoriaRepository extends JpaRepository<LinhaCategoria, Long> {
+interface ILinhaCategoriaRepository extends JpaRepository<LinhaCategoria, Long> {
     Optional<LinhaCategoria> findByCodigo(String codigo);
 }

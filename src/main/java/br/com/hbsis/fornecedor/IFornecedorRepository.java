@@ -1,12 +1,11 @@
 package br.com.hbsis.fornecedor;
 
-import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface IFornecedorRepository extends JpaRepository<Fornecedor, Long>{
+interface IFornecedorRepository extends JpaRepository<Fornecedor, Long> {
     Optional<Fornecedor> findByCnpj(String cnpj);
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ICategoriaProdutoRepository extends JpaRepository<CategoriaProduto, Long>{
+interface ICategoriaProdutoRepository extends JpaRepository<CategoriaProduto, Long>{
     Optional<CategoriaProduto> findByCodigo(String codigo);
     Optional<CategoriaProduto> findByFornecedorId(Long fornecedorId);
 }

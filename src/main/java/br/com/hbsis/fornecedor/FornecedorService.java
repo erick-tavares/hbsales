@@ -7,6 +7,7 @@ import br.com.hbsis.categoriaproduto.ICategoriaProdutoRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,7 +21,7 @@ public class FornecedorService {
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final CategoriaProdutoService categoriaProdutoService;
 
-    public FornecedorService(IFornecedorRepository iFornecedorRepository, ICategoriaProdutoRepository iCategoriaProdutoRepository, CategoriaProdutoService categoriaProdutoService) {
+    public @Lazy FornecedorService (IFornecedorRepository iFornecedorRepository, ICategoriaProdutoRepository iCategoriaProdutoRepository, CategoriaProdutoService categoriaProdutoService) {
         this.iFornecedorRepository = iFornecedorRepository;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
         this.categoriaProdutoService = categoriaProdutoService;

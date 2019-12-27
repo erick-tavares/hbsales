@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface IPeriodoVendasRepository extends JpaRepository<PeriodoVendas, Long> {
+interface IPeriodoVendasRepository extends JpaRepository<PeriodoVendas, Long> {
 
     Optional<PeriodoVendas> findFornecedorById(Long idFornecedor);
 
