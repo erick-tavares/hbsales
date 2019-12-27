@@ -111,6 +111,22 @@ public class FornecedorService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+    public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
+
+        String codigoCategoria = "";
+
+        String fornecedorCnpj = "";
+        FornecedorDTO fornecedorDTO = findById(idFornecedor);
+        fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
+
+        String codigoGerado = "";
+        codigoGerado = String.format("%03d", codigoDoUsuario).toUpperCase();
+
+        codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
+
+        return codigoCategoria;
+    }
+
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
         CategoriaProduto categoriaProdutoExistente = categoriaProdutoService.findByFornecedorId(id);
@@ -129,7 +145,7 @@ public class FornecedorService {
             fornecedorExistente.setTelefone(fornecedorDTO.getTelefone());
             fornecedorExistente.setEmail(fornecedorDTO.getEmail());
 
-            if (categoriaProdutoExistente != null){
+            if (categoriaProdutoExistente != null ){
                 categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProdutoExistente),id);
             }
 
