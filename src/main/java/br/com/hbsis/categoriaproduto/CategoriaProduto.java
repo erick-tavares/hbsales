@@ -1,6 +1,5 @@
 package br.com.hbsis.categoriaproduto;
 
-
 import br.com.hbsis.fornecedor.Fornecedor;
 import javax.persistence.*;
 
