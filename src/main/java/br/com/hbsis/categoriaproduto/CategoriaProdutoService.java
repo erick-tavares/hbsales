@@ -144,13 +144,13 @@ public class CategoriaProdutoService {
         }
     }
 
-    public CategoriaProduto findByFornecedorId(Long id) {
-        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByFornecedorId(id);
+    public CategoriaProduto findByFornecedorId(Long fornecedorId) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByFornecedorId(fornecedorId);
 
         if (categoriaProdutoOptional.isPresent()) {
             return categoriaProdutoOptional.get();
         }
-        throw new IllegalArgumentException(String.format("Código %s não existe", id));
+        throw new IllegalArgumentException(String.format("Código %s não existe", fornecedorId));
     }
 
     public CategoriaProduto findByCodigo(String codigo) {

@@ -19,7 +19,7 @@ public class FornecedorService {
     private final IFornecedorRepository iFornecedorRepository;
     private final CategoriaProdutoService categoriaProdutoService;
 
-    public @Lazy FornecedorService (IFornecedorRepository iFornecedorRepository, CategoriaProdutoService categoriaProdutoService) {
+    public FornecedorService (IFornecedorRepository iFornecedorRepository, CategoriaProdutoService categoriaProdutoService) {
         this.iFornecedorRepository = iFornecedorRepository;
         this.categoriaProdutoService = categoriaProdutoService;
     }
@@ -113,7 +113,7 @@ public class FornecedorService {
 
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
-        Optional<CategoriaProduto> categoriProdutoExistenteOptional = Optional.ofNullable(categoriaProdutoService.findByFornecedorId(id));
+        CategoriaProduto categoriaProdutoExistente = categoriaProdutoService.findByFornecedorId(id);
 
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
@@ -129,13 +129,9 @@ public class FornecedorService {
             fornecedorExistente.setTelefone(fornecedorDTO.getTelefone());
             fornecedorExistente.setEmail(fornecedorDTO.getEmail());
 
-            if (categoriProdutoExistenteOptional.isPresent()){
-                CategoriaProduto categoriaProdutoExistente = categoriProdutoExistenteOptional.get();
+            if (categoriaProdutoExistente != null){
                 categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProdutoExistente),id);
             }
-
-
-          //  categoriaProdutoService.findById(id).setCodigo(gerarCodigoCategoria(categoriaProdutoDTO.getFornecedorId(), categoriaProdutoDTO.getCodigo()));
 
             fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
 
