@@ -269,11 +269,11 @@ public class ProdutoService {
                     produto.setLinhaCategoriaId(linhaCategoria);
 
                     this.iProdutoRepository.save(produto);
-                    LOGGER.info("Importando produto... id: [{}]");
+                    LOGGER.info("Importando produto... id: [{}]", produto.getId());
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error ("Erro ao importar produto");
         }
     }
 
@@ -310,7 +310,7 @@ public class ProdutoService {
                         LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error ("Erro ao atualizar a categoria");
                 }
 
                 Optional<LinhaCategoria> linhaCategoriaExistente = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[7]));
@@ -336,7 +336,7 @@ public class ProdutoService {
                         LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error ("Erro ao atualizar a linha da categoria");
                 }
 
                 Optional<Produto> produtoExistente = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
@@ -371,7 +371,7 @@ public class ProdutoService {
                         LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error ("Erro ao atualizar produto");
                 }
 
             }

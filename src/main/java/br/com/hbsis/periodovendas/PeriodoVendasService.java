@@ -88,15 +88,6 @@ public class PeriodoVendasService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public PeriodoVendas findFornecedorById(Long idFornecedor) {
-        Optional<PeriodoVendas> periodoVendasOptional = this.iPeriodoVendasRepository.findFornecedorById(idFornecedor);
-        if (periodoVendasOptional.isPresent()) {
-            return periodoVendasOptional.get();
-        }
-
-        throw new IllegalArgumentException(String.format("ID %s não existe", idFornecedor));
-    }
-
     public boolean validarPeriodo(PeriodoVendasDTO periodoDTO, Long fornecedorId) {
 
         for (PeriodoVendas periodo : iPeriodoVendasRepository.findAllFornecedorById(fornecedorId)) {

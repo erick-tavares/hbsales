@@ -180,12 +180,12 @@ public class LinhaCategoriaService {
                     linhaCategoria.setCategoriaId(categoriaProduto);
 
                     this.iLinhaCategoriaRepository.save(linhaCategoria);
-                    LOGGER.info("Importando linha de categoria... id: [{}]");
+                    LOGGER.info("Importando linha de categoria... id: [{}]", linhaCategoria.getId());
                 }
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error ("Erro ao importar a linha da categoria");
         }
 
     }
