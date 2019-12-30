@@ -6,7 +6,6 @@ import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -139,7 +138,7 @@ public class CategoriaProdutoService {
             LOGGER.error ("Erro ao importar a categoria");
         }
     }
-/*
+
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);
 
@@ -148,7 +147,7 @@ public class CategoriaProdutoService {
         }
         throw new IllegalArgumentException(String.format("Id %s não existe"));
     }
-*/
+
     public CategoriaProduto findByCodigo(String codigo) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
 

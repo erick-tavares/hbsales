@@ -1,15 +1,11 @@
 package br.com.hbsis.fornecedor;
 
-import br.com.hbsis.categoriaproduto.AlterCodCategoria;
-import br.com.hbsis.categoriaproduto.CategoriaProduto;
-import br.com.hbsis.categoriaproduto.CategoriaProdutoDTO;
-import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
+import br.com.hbsis.categoriaproduto.CodCategoria;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,13 +14,11 @@ public class FornecedorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(br.com.hbsis.fornecedor.FornecedorService.class);
 
     private final IFornecedorRepository iFornecedorRepository;
-    private final CategoriaProdutoService categoriaProdutoService;
-    private final AlterCodCategoria alterCodCategoria;
+    private final CodCategoria codCategoria;
 
-    public FornecedorService(IFornecedorRepository iFornecedorRepository, CategoriaProdutoService categoriaProdutoService, AlterCodCategoria alterCodCategoria) {
+    public FornecedorService(IFornecedorRepository iFornecedorRepository, CodCategoria codCategoria) {
         this.iFornecedorRepository = iFornecedorRepository;
-        this.categoriaProdutoService = categoriaProdutoService;
-        this.alterCodCategoria = alterCodCategoria;
+        this.codCategoria = codCategoria;
     }
 
     public FornecedorDTO save(FornecedorDTO fornecedorDTO) {
@@ -116,7 +110,6 @@ public class FornecedorService {
 
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
-        // List<CategoriaProduto> categoriaProduto = categoriaProdutoService.listarCategoria(id);
 
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
@@ -134,7 +127,7 @@ public class FornecedorService {
 
             fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
 
-            alterCodCategoria.alterarCodCategoria (fornecedorExistente);
+            codCategoria.alterarCodCategoria (fornecedorExistente);
 
 
             return FornecedorDTO.of(fornecedorExistente);

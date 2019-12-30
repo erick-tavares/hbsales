@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AlterCodCategoria {
+public class CodCategoria {
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
 
-    public AlterCodCategoria (ICategoriaProdutoRepository iCategoriaProdutoRepository) {
+    public CodCategoria(ICategoriaProdutoRepository iCategoriaProdutoRepository) {
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
     }
 
@@ -18,11 +18,15 @@ public class AlterCodCategoria {
 
         if (listaCategoriaProduto != null) {
             for (CategoriaProduto cat : listaCategoriaProduto) {
-                cat.setCodigo(cat.getCodigo().substring(7, 10));
+                cat.setCodigo("CAT" + fornecedor.getCnpj().substring(10, 14) + cat.getCodigo().substring(7, 10));
                 cat.setFornecedorId(fornecedor);
 
                this.iCategoriaProdutoRepository.save(cat);
             }
         }
     }
+
+
+
+
 }
