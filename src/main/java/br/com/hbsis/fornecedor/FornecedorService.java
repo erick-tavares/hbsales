@@ -116,7 +116,7 @@ public class FornecedorService {
 
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
-        List<CategoriaProduto> categoriaProduto = categoriaProdutoService.listarCategoria(id);
+        // List<CategoriaProduto> categoriaProduto = categoriaProdutoService.listarCategoria(id);
 
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
@@ -134,16 +134,7 @@ public class FornecedorService {
 
             fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
 
-            if (categoriaProduto != null ) {
-                for (CategoriaProduto cat : categoriaProduto) {
-                    cat.setCodigo(cat.getCodigo().substring(7,10));
-                    cat.setFornecedorId(fornecedorExistente);
-
-                    alterCodCategoria.update(CategoriaProdutoDTO.of(cat), cat.getId());
-                }
-                return FornecedorDTO.of(fornecedorExistente);
-            }
-
+            alterCodCategoria.alterarCodCategoria (fornecedorExistente);
 
 
             return FornecedorDTO.of(fornecedorExistente);

@@ -85,10 +85,6 @@ public class CategoriaProdutoService {
         }
     }
 
-    public List<CategoriaProduto> listarCategoria(Long fornecedorId) {
-        return this.iCategoriaProdutoRepository.findByFornecedorId_Id(fornecedorId);
-    }
-
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String categoriaProdutoCSV = "categoriaProduto.csv";
         response.setContentType("text/csv");
@@ -143,16 +139,16 @@ public class CategoriaProdutoService {
             LOGGER.error ("Erro ao importar a categoria");
         }
     }
-
+/*
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
-        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findByFornecedorId_Id(fornecedorId);
+        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);
 
         if (categoriaProduto != null ) {
             return (CategoriaProduto) categoriaProduto;
         }
         throw new IllegalArgumentException(String.format("Id %s não existe"));
     }
-
+*/
     public CategoriaProduto findByCodigo(String codigo) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
 
