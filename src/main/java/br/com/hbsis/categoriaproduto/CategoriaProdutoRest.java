@@ -42,7 +42,7 @@ public class CategoriaProdutoRest {
 
     @PostMapping(value = "/import-categorias", consumes = "multipart/form-data")
     public void importCSV(@RequestParam("file") MultipartFile importCategoria) {
-        this.categoriaProdutoService.importCSV(importCategoria);
+        this.categoriaProdutoService.importCategoriaCSV(importCategoria);
     }
 
     @GetMapping("/export-categorias")

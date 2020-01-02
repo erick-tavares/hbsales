@@ -22,6 +22,7 @@ public class CodCategoria {
                 cat.setFornecedorId(fornecedor);
 
                this.iCategoriaProdutoRepository.save(cat);
+
             }
         }
     }

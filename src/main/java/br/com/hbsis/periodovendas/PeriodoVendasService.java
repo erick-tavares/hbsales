@@ -64,9 +64,22 @@ public class PeriodoVendasService {
         if (StringUtils.isEmpty(String.valueOf(periodoVendasDTO.getFornecedorId()))) {
             throw new IllegalArgumentException("FornecedorId não deve ser nulo/vazio");
         }
-        if ((periodoVendasDTO.getInicioVendas().isBefore(LocalDate.now())) || periodoVendasDTO.getInicioVendas().isAfter(periodoVendasDTO.getFimVendas()) ||
-                periodoVendasDTO.getRetiradaPedido().isBefore(periodoVendasDTO.getFimVendas())) {
+
+
+        if ((periodoVendasDTO.getInicioVendas().isBefore(periodoVendasDTO.getFimVendas())) && periodoVendasDTO.getInicioVendas().isAfter(periodoVendasDTO.getInicioVendas())){
+        throw new IllegalArgumentException("A data de início de período é inválida");
+    }
+        if ((periodoVendasDTO.getFimVendas().isBefore(periodoVendasDTO.getFimVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodoVendasDTO.getInicioVendas())){
+            throw new IllegalArgumentException("A data de fim de período é inválida");
+        }
+        if ((periodoVendasDTO.getInicioVendas().isBefore(periodoVendasDTO.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodoVendasDTO.getFimVendas())){
             throw new IllegalArgumentException("A data de período é inválida");
+        }
+        if ((periodoVendasDTO.getInicioVendas().isBefore(LocalDate.now())) || periodoVendasDTO.getFimVendas().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("A data de período não pode ser registrada antes do dia de hoje");
+        }
+        if (periodoVendasDTO.getRetiradaPedido().isBefore(periodoVendasDTO.getFimVendas())) {
+            throw new IllegalArgumentException("A data de retirada do pedido é inválida");
         }
         if (this.validarPeriodo(periodoVendasDTO, periodoVendasDTO.getFornecedorId())) {
             throw new IllegalArgumentException(String.format("Período de vendas ja existe"));

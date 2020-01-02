@@ -2,6 +2,7 @@ package br.com.hbsis.linhacategoria;
 
 import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
+import br.com.hbsis.exportimportcsv.ExportCSV;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,10 +20,12 @@ public class LinhaCategoriaService {
 
     private final ILinhaCategoriaRepository iLinhaCategoriaRepository;
     private final CategoriaProdutoService categoriaProdutoService;
+    private final ExportCSV exportCSV;
 
-    public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService) {
+    public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService, ExportCSV exportCSV) {
         this.iLinhaCategoriaRepository = iLinhaCategoriaRepository;
         this.categoriaProdutoService = categoriaProdutoService;
+        this.exportCSV = exportCSV;
     }
 
     public LinhaCategoriaDTO save(LinhaCategoriaDTO linhaCategoriaDTO) {
@@ -50,7 +52,6 @@ public class LinhaCategoriaService {
         if (linhaCategoriaDTO == null) {
             throw new IllegalArgumentException("LinhaCategoriaDTO não deve ser nula");
         }
-
         if (StringUtils.isEmpty(linhaCategoriaDTO.getNome())) {
             throw new IllegalArgumentException("Nome não deve ser nulo/vazio");
         }
@@ -62,18 +63,12 @@ public class LinhaCategoriaService {
         }
     }
 
-
     public String gerarCodigoLinhaCategoria(String codigoDoUsuario) {
 
         String codigoGerado = String.format("%10s", codigoDoUsuario).toUpperCase();
         codigoGerado = codigoGerado.replace(' ', '0');
 
         return codigoGerado;
-    }
-
-    public List<LinhaCategoria> listarLinhaCategoria() {
-        List<LinhaCategoria> linhaCategoria = this.iLinhaCategoriaRepository.findAll();
-        return linhaCategoria;
     }
 
     public LinhaCategoria findByCodigo(String codigo) {
@@ -85,6 +80,11 @@ public class LinhaCategoriaService {
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
     }
 
+    public Optional<LinhaCategoria> findByCodigoOptional(String codigo) {
+        Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findByCodigo(codigo);
+
+        return linhaCategoriaOptional;
+    }
     public LinhaCategoriaDTO findById(Long id) {
         Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
 
@@ -134,20 +134,13 @@ public class LinhaCategoriaService {
         this.iLinhaCategoriaRepository.deleteById(id);
     }
 
-    public void exportCSV(HttpServletResponse response) throws IOException {
-        String linhaCategoriaCSV = "linhaCategoria.csv";
-        response.setContentType("text/csv");
 
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", linhaCategoriaCSV);
-        response.setHeader(headerKey, headerValue);
+    public void exportCSV(HttpServletResponse response) throws IOException {
+        String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";
+        exportCSV.exportarCSV(response,header);
 
         PrintWriter printWriter = response.getWriter();
-
-        String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";
-        printWriter.println(header);
-
-        for (LinhaCategoria linhaCategoriaCSVObjeto : listarLinhaCategoria()) {
+        for (LinhaCategoria linhaCategoriaCSVObjeto : this.iLinhaCategoriaRepository.findAll()) {
             String linhaCategoriaCodigo = linhaCategoriaCSVObjeto.getCodigo();
             String linhaCategoriaNome = linhaCategoriaCSVObjeto.getNome();
             String categoriaProdutoCodigo = linhaCategoriaCSVObjeto.getCategoriaId().getCodigo();

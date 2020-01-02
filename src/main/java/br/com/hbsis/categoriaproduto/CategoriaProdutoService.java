@@ -1,6 +1,7 @@
 package br.com.hbsis.categoriaproduto;
 
-import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.exportimportcsv.ExportCSV;
+import br.com.hbsis.exportimportcsv.ImportCSV;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.MaskFormatter;
 import java.io.*;
 import java.text.ParseException;
 import java.util.List;
@@ -23,11 +23,15 @@ public class CategoriaProdutoService {
 
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final FornecedorService fornecedorService;
+    private final ExportCSV exportCSV;
+    private final ImportCSV importCSV;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService) {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV, ImportCSV importCSV) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
+        this.exportCSV = exportCSV;
+        this.importCSV = importCSV;
     }
 
     public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
@@ -84,32 +88,29 @@ public class CategoriaProdutoService {
         }
     }
 
-    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
-        String categoriaProdutoCSV = "categoriaProduto.csv";
-        response.setContentType("text/csv");
-
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", categoriaProdutoCSV);
-        response.setHeader(headerKey, headerValue);
-        PrintWriter printWriter = response.getWriter();
-
-        MaskFormatter mask = new MaskFormatter("##.###.###/####-##");
-        mask.setValueContainsLiteralCharacters(false);
-
+    public void exportCSV (HttpServletResponse response) throws IOException, ParseException {
         String header = "Nome;Código;Razão social;CNPJ";
-        printWriter.println(header);
+        exportCSV.exportarCSV(response, header);
 
+        PrintWriter printWriter = response.getWriter();
         for (CategoriaProduto categoriaCSVObjeto : this.iCategoriaProdutoRepository.findAll()) {
+
             String categoriaNome = categoriaCSVObjeto.getNome();
             String categoriaCodigo = categoriaCSVObjeto.getCodigo();
             String razaoSocial = categoriaCSVObjeto.getFornecedorId().getRazaoSocial();
-            String fornecedorCnpj = mask.valueToString(categoriaCSVObjeto.getFornecedorId().getCnpj());
+            String fornecedorCnpj = exportCSV.mask(categoriaCSVObjeto.getFornecedorId().getCnpj());
 
             printWriter.println(categoriaNome + ";" + categoriaCodigo + ";" + razaoSocial + ";" + fornecedorCnpj);
         }
         printWriter.close();
     }
 
+    public void importCategoriaCSV(MultipartFile importCategoria) {
+        importCSV.importCategoriaCSV(importCategoria);
+
+    }
+
+    /*
     public void importCSV(MultipartFile importCategoria) {
         String linhaDoArquivo = "";
         String quebraDeLinha = ";";
@@ -139,6 +140,8 @@ public class CategoriaProdutoService {
         }
     }
 
+     */
+
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);
 
@@ -157,6 +160,11 @@ public class CategoriaProdutoService {
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
     }
 
+    public Optional<CategoriaProduto> findByCodigoOptional(String codigo) {
+        Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
+
+            return categoriaProdutoOptional;
+    }
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
