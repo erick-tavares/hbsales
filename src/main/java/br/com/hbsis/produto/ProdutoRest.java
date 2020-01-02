@@ -1,5 +1,6 @@
 package br.com.hbsis.produto;
 
+import br.com.hbsis.exportimportcsv.ImportCSV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,12 @@ public class ProdutoRest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoRest.class);
 
     private final ProdutoService produtoService;
+    private final ImportCSV importCSV;
 
     @Autowired
-    public ProdutoRest(ProdutoService produtoService) {
+    public ProdutoRest(ProdutoService produtoService, ImportCSV importCSV) {
         this.produtoService = produtoService;
+        this.importCSV = importCSV;
     }
 
     @PostMapping
@@ -56,7 +59,7 @@ public class ProdutoRest {
 
     @PostMapping (value = "/import-produtos", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importProduto) {
-        this.produtoService.importCSV(importProduto);
+        importCSV.importProdutoCSV(importProduto);
     }
 
     @PostMapping (value = "/import-produtos/{id}", consumes = "multipart/form-data")

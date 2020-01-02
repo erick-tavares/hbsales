@@ -1,5 +1,6 @@
 package br.com.hbsis.linhacategoria;
 
+import br.com.hbsis.exportimportcsv.ImportCSV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.text.ParseException;
 
 @RestController
 @RequestMapping("/linha-categorias")
@@ -17,10 +17,12 @@ public class LinhaCategoriaRest {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinhaCategoriaRest.class);
 
     private final LinhaCategoriaService linhaCategoriaService;
+    private final ImportCSV importCSV;
 
     @Autowired
-    public LinhaCategoriaRest(LinhaCategoriaService linhaCategoriaService) {
+    public LinhaCategoriaRest(LinhaCategoriaService linhaCategoriaService, ImportCSV importCSV) {
         this.linhaCategoriaService = linhaCategoriaService;
+        this.importCSV = importCSV;
     }
 
     @PostMapping
@@ -56,7 +58,7 @@ public class LinhaCategoriaRest {
 
     @PostMapping (value = "/import-linhas", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importLinhaCategoria) {
-        this.linhaCategoriaService.importCSV(importLinhaCategoria);
+        importCSV.importLinhaCategoriaCSV(importLinhaCategoria);
     }
 
     @GetMapping("/export-linhas")

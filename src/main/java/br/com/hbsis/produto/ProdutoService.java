@@ -23,9 +23,9 @@ import java.io.PrintWriter;
 import java.text.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
+import java.util.regex.Matcher;
 @Service
 public class ProdutoService {
 
@@ -75,15 +75,12 @@ public class ProdutoService {
         if (StringUtils.isEmpty(String.valueOf(produtoDTO.getPesoPorUnidade()))) {
             throw new IllegalArgumentException("PesoPorUnidade não deve ser nulo/vazio");
         }
-        if (!(StringUtils.isNumeric(String.valueOf(produtoDTO.getPesoPorUnidade())))) {
-            throw new IllegalArgumentException("PesoPorUnidade deve conter apenas números");
-        }
-        if (StringUtils.isEmpty(produtoDTO.getUnidadeMedidaPeso())) {
-            throw new IllegalArgumentException("UnidadeMedidaPeso não deve ser nulo/vazio");
-        }
         if (!(produtoDTO.getUnidadeMedidaPeso().equalsIgnoreCase("kg")) && !(produtoDTO.getUnidadeMedidaPeso().equalsIgnoreCase("g"))
                 && !(produtoDTO.getUnidadeMedidaPeso().equalsIgnoreCase("mg"))) {
             throw new IllegalArgumentException("UnidadeMedidaPeso só aceita os valore kg,g e mg");
+        }
+        if (StringUtils.isEmpty(produtoDTO.getUnidadeMedidaPeso())) {
+            throw new IllegalArgumentException("UnidadeMedidaPeso não deve ser nulo/vazio");
         }
         if (StringUtils.isEmpty(String.valueOf(produtoDTO.getValidade()))) {
             throw new IllegalArgumentException("Validade não deve ser nula/vazia");
@@ -110,10 +107,13 @@ public class ProdutoService {
         }
         throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
     }
+    public Optional<Produto> findByCodigoOptional(String codigo) {
+        Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(codigo);
+
+            return produtoOptional;
+    }
 
     public ProdutoDTO save(ProdutoDTO produtoDTO) {
-
-        this.validate(produtoDTO);
 
         LOGGER.info("Salvando produto");
         LOGGER.debug("Produto: {}", produtoDTO);
@@ -127,6 +127,8 @@ public class ProdutoService {
         produto.setUnidadeMedidaPeso(produtoDTO.getUnidadeMedidaPeso());
         produto.setValidade(produtoDTO.getValidade());
         produto.setLinhaCategoriaId(linhaCategoriaService.findLinhaCategoriaById(produtoDTO.getLinhaCategoriaId()));
+
+        this.validate(produtoDTO);
 
         produto = this.iProdutoRepository.save(produto);
 
@@ -243,40 +245,6 @@ public class ProdutoService {
         printWriter.close();
     }
 
-    public void importCSV(MultipartFile importProduto) {
-        String linhaDoArquivo = "";
-        String quebraDeLinha = ";";
-
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importProduto.getInputStream()))) {
-
-            linhaDoArquivo = leitor.readLine();
-            while ((linhaDoArquivo = leitor.readLine()) != null) {
-                String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<LinhaCategoria> linhaCategoriaOptional = Optional.ofNullable(linhaCategoriaService.findByCodigo(produtoCSV[6]));
-                Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
-
-                if (!(produtoOptional.isPresent()) && linhaCategoriaOptional.isPresent()) {
-                    Produto produto = new Produto();
-                    produto.setCodigo(gerarCodigoProduto(produtoCSV[0]));
-                    produto.setNome(produtoCSV[1]);
-                    produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
-                    produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-                    produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replaceAll("[kgm]", "").replace(",", ".")));
-                    produto.setUnidadeMedidaPeso(produtoCSV[4].replaceAll("[\\d,]", ""));
-
-                    produto.setValidade(LocalDate.parse(produtoCSV[5].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-                    LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[6]);
-                    produto.setLinhaCategoriaId(linhaCategoria);
-
-                    this.iProdutoRepository.save(produto);
-                    LOGGER.info("Importando produto... id: [{}]", produto.getId());
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("Erro ao importar produto");
-        }
-    }
 
     public void importCSVPorFornecedor(MultipartFile importProdutoPorFornecedor, Long id) throws IOException {
         String linhaDoArquivo = "";

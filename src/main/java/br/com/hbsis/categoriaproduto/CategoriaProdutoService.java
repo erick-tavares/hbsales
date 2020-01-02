@@ -1,14 +1,12 @@
 package br.com.hbsis.categoriaproduto;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
-import br.com.hbsis.exportimportcsv.ImportCSV;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -24,14 +22,14 @@ public class CategoriaProdutoService {
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final FornecedorService fornecedorService;
     private final ExportCSV exportCSV;
-    private final ImportCSV importCSV;
 
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV, ImportCSV importCSV) {
+
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
         this.exportCSV = exportCSV;
-        this.importCSV = importCSV;
+
     }
 
     public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
@@ -104,43 +102,6 @@ public class CategoriaProdutoService {
         }
         printWriter.close();
     }
-
-    public void importCategoriaCSV(MultipartFile importCategoria) {
-        importCSV.importCategoriaCSV(importCategoria);
-
-    }
-
-    /*
-    public void importCSV(MultipartFile importCategoria) {
-        String linhaDoArquivo = "";
-        String quebraDeLinha = ";";
-
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importCategoria.getInputStream()))) {
-
-            linhaDoArquivo = leitor.readLine();
-            while ((linhaDoArquivo = leitor.readLine()) != null) {
-                String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<Fornecedor> fornecedorOptional = Optional.ofNullable(fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", "")));
-                Optional<CategoriaProduto> categoriaProdutoExisteOptional = this.iCategoriaProdutoRepository.findByCodigo(categoriaCSV[1]);
-
-                if (!(categoriaProdutoExisteOptional.isPresent()) && fornecedorOptional.isPresent()) {
-                    CategoriaProduto categoriaProduto = new CategoriaProduto();
-                    categoriaProduto.setNome(categoriaCSV[0]);
-                    categoriaProduto.setCodigo(categoriaCSV[1]);
-
-                    Fornecedor fornecedor = fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", ""));
-                    categoriaProduto.setFornecedorId(fornecedor);
-
-                    this.iCategoriaProdutoRepository.save(categoriaProduto);
-                    LOGGER.info("Importando categoria de produto... id: [{}]", categoriaProduto.getId());
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error ("Erro ao importar a categoria");
-        }
-    }
-
-     */
 
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);

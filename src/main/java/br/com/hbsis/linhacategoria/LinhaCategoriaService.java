@@ -1,13 +1,11 @@
 package br.com.hbsis.linhacategoria;
 
-import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import br.com.hbsis.exportimportcsv.ExportCSV;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -149,37 +147,5 @@ public class LinhaCategoriaService {
             printWriter.println(linhaCategoriaCodigo + ";" + linhaCategoriaNome + ";" + categoriaProdutoCodigo + ";" + categoriaProdutoNome);
         }
         printWriter.close();
-    }
-
-    public void importCSV(MultipartFile importLinhaCategoria) {
-        String linhaDoArquivo = "";
-        String quebraDeLinha = ";";
-
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importLinhaCategoria.getInputStream()))) {
-
-            linhaDoArquivo = leitor.readLine();
-            while ((linhaDoArquivo = leitor.readLine()) != null) {
-                String[] linhaCategoriaCSV = linhaDoArquivo.split(quebraDeLinha);
-                Optional<CategoriaProduto> categoriaProdutoOptional = Optional.ofNullable(categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]));
-                Optional<LinhaCategoria> linhaCategoriaExisteOptional = this.iLinhaCategoriaRepository.findByCodigo(linhaCategoriaCSV[0]);
-
-
-                if (!(linhaCategoriaExisteOptional.isPresent()) && categoriaProdutoOptional.isPresent()) {
-                    LinhaCategoria linhaCategoria = new LinhaCategoria();
-                    linhaCategoria.setCodigo(gerarCodigoLinhaCategoria(linhaCategoriaCSV[0]));
-                    linhaCategoria.setNome(linhaCategoriaCSV[1]);
-
-                    CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(linhaCategoriaCSV[2]);
-                    linhaCategoria.setCategoriaId(categoriaProduto);
-
-                    this.iLinhaCategoriaRepository.save(linhaCategoria);
-                    LOGGER.info("Importando linha de categoria... id: [{}]", linhaCategoria.getId());
-                }
-            }
-
-        } catch (IOException e) {
-            LOGGER.error ("Erro ao importar a linha da categoria");
-        }
-
     }
 }
