@@ -26,17 +26,12 @@ public class ProdutoService {
 
     private final IProdutoRepository iProdutoRepository;
     private final LinhaCategoriaService linhaCategoriaService;
-    private final CategoriaProdutoService categoriaProdutoService;
-    private final FornecedorService fornecedorService;
     private final ExportCSV exportCSV;
 
 
-    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService,
-                          CategoriaProdutoService categoriaProdutoService, FornecedorService fornecedorService, ExportCSV exportCSV) {
+    public ProdutoService(IProdutoRepository iProdutoRepository, LinhaCategoriaService linhaCategoriaService, ExportCSV exportCSV) {
         this.iProdutoRepository = iProdutoRepository;
         this.linhaCategoriaService = linhaCategoriaService;
-        this.categoriaProdutoService = categoriaProdutoService;
-        this.fornecedorService = fornecedorService;
         this.exportCSV = exportCSV;
     }
 
@@ -91,15 +86,6 @@ public class ProdutoService {
             return ProdutoDTO.of(produtoOptional.get());
         }
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
-
-    public Produto findByCodigo(String codigo) {
-        Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(codigo);
-
-        if (produtoOptional.isPresent()) {
-            return produtoOptional.get();
-        }
-        throw new IllegalArgumentException(String.format("Código %s não existe", codigo));
     }
 
     public Optional<Produto> findByCodigoOptional(String codigo) {

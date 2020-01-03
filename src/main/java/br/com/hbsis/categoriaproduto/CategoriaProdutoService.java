@@ -111,15 +111,6 @@ public class CategoriaProdutoService {
         printWriter.close();
     }
 
-    public CategoriaProduto findByFornecedorId(Long fornecedorId) {
-        List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);
-
-        if (categoriaProduto != null) {
-            return (CategoriaProduto) categoriaProduto;
-        }
-        throw new IllegalArgumentException(String.format("Id %s não existe"));
-    }
-
     public CategoriaProduto findByCodigo(String codigo) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
 
