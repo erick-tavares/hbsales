@@ -32,6 +32,7 @@ public class CategoriaProdutoRest {
         LOGGER.info("Recebendo solicitação de persistência de categoria...");
         LOGGER.debug("Payaload: {}", categoriaProdutoDTO);
 
+
         return this.categoriaProdutoService.save(categoriaProdutoDTO);
     }
 
