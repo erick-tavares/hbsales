@@ -63,10 +63,13 @@ public class LinhaCategoriaService {
 
     public String gerarCodigoLinhaCategoria(String codigoDoUsuario) {
 
-        String codigoGerado = String.format("%10s", codigoDoUsuario).toUpperCase();
-        codigoGerado = codigoGerado.replace(' ', '0');
+        if (codigoDoUsuario.length() < 10) {
+            String codigoGerado = String.format("%10s", codigoDoUsuario).toUpperCase();
+            codigoGerado = codigoGerado.replace(' ', '0');
 
-        return codigoGerado;
+            return codigoGerado;
+        }
+        return codigoDoUsuario;
     }
 
     public LinhaCategoria findByCodigo(String codigo) {
@@ -83,6 +86,7 @@ public class LinhaCategoriaService {
 
         return linhaCategoriaOptional;
     }
+
     public LinhaCategoriaDTO findById(Long id) {
         Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findById(id);
 
@@ -135,7 +139,7 @@ public class LinhaCategoriaService {
 
     public void exportCSV(HttpServletResponse response) throws IOException {
         String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";
-        exportCSV.exportarCSV(response,header);
+        exportCSV.exportarCSV(response, header);
 
         PrintWriter printWriter = response.getWriter();
         for (LinhaCategoria linhaCategoriaCSVObjeto : this.iLinhaCategoriaRepository.findAll()) {

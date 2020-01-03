@@ -23,29 +23,37 @@ public class CategoriaProdutoService {
     private final FornecedorService fornecedorService;
     private final ExportCSV exportCSV;
 
-
-
     public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
         this.exportCSV = exportCSV;
-
     }
 
     public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
 
         String codigoCategoria = "";
-
         String fornecedorCnpj = "";
-        FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
-        fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
-        String codigoGerado = "";
-        codigoGerado =  StringUtils.leftPad(codigoDoUsuario.toUpperCase(),3,"0");
+        if (codigoDoUsuario.length() < 4) {
+            FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
+            fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
-        codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
+            String codigoGerado = "";
+            codigoGerado = StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
+
+            codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
+        } else {
+            FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
+            fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
+
+            String codigoGerado = codigoDoUsuario.substring(7, 10);
+            codigoGerado = StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
+
+            codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado.substring(7, 10);
+        }
 
         return codigoCategoria;
+
     }
 
     public CategoriaProdutoDTO save(CategoriaProdutoDTO categoriaProdutoDTO) {
@@ -78,7 +86,7 @@ public class CategoriaProdutoService {
         if (StringUtils.isEmpty(categoriaProdutoDTO.getCodigo())) {
             throw new IllegalArgumentException("Código não deve ser nula/vazia");
         }
-        if (!(StringUtils.isNumeric(categoriaProdutoDTO.getCodigo()))) {
+        if (categoriaProdutoDTO.getCodigo().length() <= 3 && (!(StringUtils.isNumeric(categoriaProdutoDTO.getCodigo())))) {
             throw new IllegalArgumentException("Código deve ser apenas números");
         }
         if (StringUtils.isEmpty(String.valueOf(categoriaProdutoDTO.getFornecedorId()))) {
@@ -86,7 +94,7 @@ public class CategoriaProdutoService {
         }
     }
 
-    public void exportCSV (HttpServletResponse response) throws IOException, ParseException {
+    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String header = "Nome;Código;Razão social;CNPJ";
         exportCSV.exportarCSV(response, header);
 
@@ -106,7 +114,7 @@ public class CategoriaProdutoService {
     public CategoriaProduto findByFornecedorId(Long fornecedorId) {
         List<CategoriaProduto> categoriaProduto = this.iCategoriaProdutoRepository.findAllByFornecedorId_Id(fornecedorId);
 
-        if (categoriaProduto != null ) {
+        if (categoriaProduto != null) {
             return (CategoriaProduto) categoriaProduto;
         }
         throw new IllegalArgumentException(String.format("Id %s não existe"));
@@ -124,8 +132,9 @@ public class CategoriaProdutoService {
     public Optional<CategoriaProduto> findByCodigoOptional(String codigo) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findByCodigo(codigo);
 
-            return categoriaProdutoOptional;
+        return categoriaProdutoOptional;
     }
+
     public CategoriaProdutoDTO findById(Long id) {
         Optional<CategoriaProduto> categoriaProdutoOptional = this.iCategoriaProdutoRepository.findById(id);
 
