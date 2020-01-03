@@ -38,7 +38,6 @@ public class ProdutoService {
         this.categoriaProdutoService = categoriaProdutoService;
         this.fornecedorService = fornecedorService;
         this.exportCSV = exportCSV;
-
     }
 
 
@@ -128,7 +127,7 @@ public class ProdutoService {
 
         produto = this.iProdutoRepository.save(produto);
 
-        return produtoDTO.of(produto);
+        return ProdutoDTO.of(produto);
     }
 
     public ProdutoDTO update(ProdutoDTO produtoDTO, Long id) {
@@ -220,86 +219,4 @@ public class ProdutoService {
         printWriter.close();
     }
 
-
-   // public void importCSVPorFornecedor(MultipartFile importProdutoPorFornecedor, Long id) throws IOException {
-
-
-
-
-//        String linhaDoArquivo = "";
-//        String quebraDeLinha = ";";
-//
-//        BufferedReader leitor = new BufferedReader(new InputStreamReader(importProdutoPorFornecedor.getInputStream()));
-//
-//        linhaDoArquivo = leitor.readLine();
-//        while ((linhaDoArquivo = leitor.readLine()) != null) {
-//            String[] produtoCSV = linhaDoArquivo.split(quebraDeLinha);
-//
-//            FornecedorDTO fornecedorExiste = fornecedorService.findById(id);
-//
-//            Optional<CategoriaProduto> categoriaProdutoExistente = categoriaProdutoService.findByCodigoOptional(produtoCSV[9]);
-//            if (categoriaProdutoExistente.isPresent() && fornecedorExiste != null) {
-//
-//                CategoriaProduto categoriaProduto = categoriaProdutoExistente.get();
-//                categoriaProduto.setCodigo(produtoCSV[9].substring(7,10));
-//                categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
-//
-//                categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProduto), categoriaProdutoExistente.get().getId());
-//                LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProdutoExistente.get());
-//            }
-//
-//
-//
-//            Optional<LinhaCategoria> linhaCategoriaExistente = linhaCategoriaService.findByCodigoOptional(produtoCSV[7]);
-//            if (linhaCategoriaExistente.isPresent()) {
-//
-//                LinhaCategoria linhaCategoria = linhaCategoriaExistente.get();
-//                linhaCategoria.setCodigo(produtoCSV[7]);
-//                linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
-//
-//                linhaCategoriaService.update(LinhaCategoriaDTO.of(linhaCategoria), linhaCategoriaExistente.get().getId());
-//                LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoriaExistente.get());
-//
-//            }
-//            if (!(linhaCategoriaExistente.isPresent())) {
-//                LinhaCategoria linhaCategoria = new LinhaCategoria();
-//                linhaCategoria.setCodigo(produtoCSV[7]);
-//                linhaCategoria.setNome(produtoCSV[8]);
-//                linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(produtoCSV[9]).getId()));
-//
-//                linhaCategoriaService.save(LinhaCategoriaDTO.of(linhaCategoria));
-//                LOGGER.info("Criando nova linha de categoria");
-//            }
-//
-//            Optional<Produto> produtoExistente = this.iProdutoRepository.findByCodigo(produtoCSV[0]);
-//            if (produtoExistente.isPresent()) {
-//
-//                Produto produto = produtoExistente.get();
-//                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
-//                produto.setCodigo(produtoCSV[0]);
-//                produto.setLinhaCategoriaId(linhaCategoria);
-//
-//                this.update(ProdutoDTO.of(produto), this.findByCodigo(produtoCSV[0]).getId());
-//                LOGGER.info("Atualizando produto... id: [{}]", produtoExistente.get().getCodigo());
-//            }
-//            if (!(produtoExistente.isPresent())) {
-//                Produto produto = new Produto();
-//                produto.setCodigo(produtoCSV[0]);
-//                produto.setNome(produtoCSV[1]);
-//                produto.setPreco(Double.parseDouble(produtoCSV[2].replaceAll("R\\$", "").replace(",", ".")));
-//                produto.setUnidadePorCaixa(Integer.parseInt(produtoCSV[3]));
-//                produto.setPesoPorUnidade(Double.parseDouble(produtoCSV[4].replace(",", ".")));
-//                produto.setUnidadeMedidaPeso(produtoCSV[5]);
-//                produto.setValidade(LocalDate.parse(produtoCSV[6].replaceAll("/", "-"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-//
-//                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(produtoCSV[7]);
-//                produto.setLinhaCategoriaId(linhaCategoria);
-//
-//                this.iProdutoRepository.save(produto);
-//                LOGGER.info("Criando novo produto");
-//            }
-//
-//        }
-//    }
-//    }
 }
