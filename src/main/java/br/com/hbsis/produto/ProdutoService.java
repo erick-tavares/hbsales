@@ -1,15 +1,11 @@
 package br.com.hbsis.produto;
 
-import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import br.com.hbsis.exportimportcsv.ExportCSV;
-import br.com.hbsis.exportimportcsv.ImportCSV;
-import br.com.hbsis.fornecedor.FornecedorService;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -84,6 +80,15 @@ public class ProdutoService {
 
         if (produtoOptional.isPresent()) {
             return ProdutoDTO.of(produtoOptional.get());
+        }
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
+    public Produto findByProdutoId(Long id) {
+        Optional<Produto> produtoOptional = this.iProdutoRepository.findById(id);
+
+        if (produtoOptional.isPresent()) {
+            return produtoOptional.get();
         }
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }

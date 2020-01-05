@@ -1,6 +1,5 @@
 package br.com.hbsis.periodovendas;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 public class PeriodoVendasDTO {
