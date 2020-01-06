@@ -9,7 +9,6 @@ public class FuncionarioDTO {
     private String nome;
     @NotBlank(message = "e-mail é obrigatório")
     private String email;
-    @NotBlank(message = "UUID é obrigatório")
     private String uuid;
 
     public FuncionarioDTO(Long id, @NotBlank(message = "nome é obrigatório") String nome, @NotBlank(message = "e-mail é obrigatório") String email, @NotBlank(message = "UUID é obrigatório") String uuid) {
