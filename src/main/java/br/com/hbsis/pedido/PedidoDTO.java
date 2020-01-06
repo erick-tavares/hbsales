@@ -10,24 +10,24 @@ public class PedidoDTO {
     private StatusPedido status;
     private Long fornecedorId;
     private Long produtoId;
+    private int quantidadeItens;
 
-    public PedidoDTO(Long id, String codigo, LocalDate dataCriacao, StatusPedido status, Long fornecedorId, Long produtoId) {
+    public PedidoDTO(Long id, String codigo, LocalDate dataCriacao, StatusPedido status, Long fornecedorId, Long produtoId, int quantidadeItens) {
         this.id = id;
         this.codigo = codigo;
         this.dataCriacao = dataCriacao;
         this.status = status;
         this.fornecedorId = fornecedorId;
         this.produtoId = produtoId;
+        this.quantidadeItens = quantidadeItens;
     }
 
-    public static PedidoDTO of(Pedido pedido) {
-        return new PedidoDTO(pedido.getId(),
-                pedido.getCodigo(),
-                pedido.getDataCriacao(),
-                pedido.getStatus(),
-                pedido.getFornecedorId().getId(),
-                pedido.getProdutoId().getId()
-        );
+    public int getQuantidadeItens() {
+        return quantidadeItens;
+    }
+
+    public void setQuantidadeItens(int quantidadeItens) {
+        this.quantidadeItens = quantidadeItens;
     }
 
     @Override
@@ -39,7 +39,18 @@ public class PedidoDTO {
                 ", status=" + status +
                 ", fornecedorId=" + fornecedorId +
                 ", produtoId=" + produtoId +
+                ", quantidadeItens=" + quantidadeItens +
                 '}';
+    }
+
+    public static PedidoDTO of(Pedido pedido) {
+        return new PedidoDTO(pedido.getId(),
+                pedido.getCodigo(),
+                pedido.getDataCriacao(),
+                pedido.getStatus(),
+                pedido.getFornecedorId().getId(),
+                pedido.getProdutoId().getId(),
+                pedido.getQuantidadeItens());
     }
 
     public Long getId() {

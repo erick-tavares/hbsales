@@ -28,6 +28,9 @@ public class Pedido {
     @JoinColumn(name = "produto_id", referencedColumnName = "id")
     private Produto produtoId;
 
+    @Column(name = "quantidade_itens")
+    private int quantidadeItens;
+
     @Override
     public String toString() {
         return "Pedido{" +
@@ -37,7 +40,16 @@ public class Pedido {
                 ", status=" + status +
                 ", fornecedorId=" + fornecedorId +
                 ", produtoId=" + produtoId +
+                ", quantidadeItens=" + quantidadeItens +
                 '}';
+    }
+
+    public int getQuantidadeItens() {
+        return quantidadeItens;
+    }
+
+    public void setQuantidadeItens(int quantidadeItens) {
+        this.quantidadeItens = quantidadeItens;
     }
 
     public Long getId() {

@@ -1,9 +1,13 @@
 package br.com.hbsis.pedido;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
+import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
-import br.com.hbsis.linhacategoria.LinhaCategoria;
-import br.com.hbsis.linhacategoria.LinhaCategoriaDTO;
+import br.com.hbsis.periodovendas.PeriodoVendas;
+import br.com.hbsis.periodovendas.PeriodoVendasDTO;
+import br.com.hbsis.periodovendas.PeriodoVendasService;
+import br.com.hbsis.produto.ProdutoDTO;
 import br.com.hbsis.produto.ProdutoService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.Optional;
 
 @Service
@@ -23,12 +28,14 @@ public class PedidoService {
     private final IPedidoRepository iPedidoRepository;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
+    private final PeriodoVendasService periodoVendasService;
     private final ExportCSV exportCSV;
 
-    public PedidoService(IPedidoRepository iPedidoRepository, FornecedorService fornecedorService, ProdutoService produtoService, ExportCSV exportCSV) {
+    public PedidoService(IPedidoRepository iPedidoRepository, FornecedorService fornecedorService, ProdutoService produtoService, PeriodoVendasService periodoVendasService, ExportCSV exportCSV) {
         this.iPedidoRepository = iPedidoRepository;
         this.fornecedorService = fornecedorService;
         this.produtoService = produtoService;
+        this.periodoVendasService = periodoVendasService;
         this.exportCSV = exportCSV;
     }
 
@@ -87,6 +94,15 @@ public class PedidoService {
         return codigoDoUsuario;
     }
 
+//    public PedidoDTO findByPeriodo(Long id) {
+//        Optional<Pedido> pedidoOptional = this.iPedidoRepository.findByPeriodo(id);
+//
+//        if (pedidoOptional.isPresent()) {
+//            return PedidoDTO.of(pedidoOptional.get());
+//        }
+//        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+//    }
+
     public PedidoDTO findById(Long id) {
         Optional<Pedido> pedidoOptional = this.iPedidoRepository.findById(id);
 
@@ -130,19 +146,23 @@ public class PedidoService {
     }
 
 
-    public void exportCSV(HttpServletResponse response) throws IOException {
-        String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";
-        exportCSV.exportarCSV(response, header);
 
-        PrintWriter printWriter = response.getWriter();
-        for (LinhaCategoria linhaCategoriaCSVObjeto : this.iPedidoRepository.findAll()) {
-            String linhaCategoriaCodigo = linhaCategoriaCSVObjeto.getCodigo();
-            String linhaCategoriaNome = linhaCategoriaCSVObjeto.getNome();
-            String categoriaProdutoCodigo = linhaCategoriaCSVObjeto.getCategoriaId().getCodigo();
-            String categoriaProdutoNome = linhaCategoriaCSVObjeto.getCategoriaId().getNome();
-
-            printWriter.println(linhaCategoriaCodigo + ";" + linhaCategoriaNome + ";" + categoriaProdutoCodigo + ";" + categoriaProdutoNome);
-        }
-        printWriter.close();
-    }
+//    ///////////exercicio 15,CSV com a quantidade dos produtos vendidos por período por Fornecedor
+//    public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
+//        String header = "Produto;Quantidade;Fornecedor";
+//        exportCSV.exportarCSV(response, header);
+//
+//        PrintWriter printWriter = response.getWriter();
+//        Fornecedor fornecedorDoPeriodo = fornecedorService.findFornecedorById();
+//        for (Pedido pedidoCSVObjeto : periodoVendasService.findByFornecedorId(pedido)) {
+//
+//            String pedidoProduto = (pedidoCSVObjeto.getProdutoId().getNome());
+//            String pedidoQuantidade = String.valueOf(pedidoCSVObjeto.getQuantidadeItens());
+//            String pedidoFornecedor = (pedidoCSVObjeto.getFornecedorId().getRazaoSocial()) + " - " + exportCSV.mask(pedidoCSVObjeto.getFornecedorId().getCnpj());
+//
+//
+//            printWriter.println(pedidoProduto + ";" + pedidoQuantidade + ";" + pedidoFornecedor);
+//        }
+//        printWriter.close();
+//    }
 }
