@@ -6,7 +6,6 @@ import br.com.hbsis.fornecedor.FornecedorService;
 import br.com.hbsis.funcionario.FuncionarioService;
 import br.com.hbsis.pedidoitem.ItemPedido;
 import br.com.hbsis.pedidoitem.ItemPedidoDTO;
-import br.com.hbsis.pedidoitem.ItemPedidoSave;
 import br.com.hbsis.periodovendas.PeriodoVendas;
 import br.com.hbsis.periodovendas.PeriodoVendasDTO;
 import br.com.hbsis.periodovendas.PeriodoVendasService;
@@ -32,17 +31,15 @@ public class PedidoService {
     private final PeriodoVendasService periodoVendasService;
     private final FuncionarioService funcionarioService;
     private final FornecedorService fornecedorService;
-    private final ItemPedidoSave itemPedidoSave;
     private final ExportCSV exportCSV;
 
     public PedidoService(IPedidoRepository iPedidoRepository, ProdutoService produtoService, PeriodoVendasService periodoVendasService,
-                         FuncionarioService funcionarioService, FornecedorService fornecedorService, ItemPedidoSave itemPedidoSave, ExportCSV exportCSV) {
+                         FuncionarioService funcionarioService, FornecedorService fornecedorService, ExportCSV exportCSV) {
         this.iPedidoRepository = iPedidoRepository;
         this.produtoService = produtoService;
         this.periodoVendasService = periodoVendasService;
         this.funcionarioService = funcionarioService;
         this.fornecedorService = fornecedorService;
-        this.itemPedidoSave = itemPedidoSave;
         this.exportCSV = exportCSV;
     }
 
@@ -66,24 +63,10 @@ public class PedidoService {
         pedido.setPeriodoVendasId(periodoVendasService.findPeriodoVendasById(pedidoDTO.getPeriodoVendasId()));
         pedido.setFornecedorId(fornecedorService.findFornecedorById(pedidoDTO.getFornecedorId()));
 
+        pedido.setItemList(preencherLista(pedidoDTO.getItemDTOList(),pedido));
+
         pedido = this.iPedidoRepository.save(pedido);
 
-
-        for (ItemPedidoDTO itemPedidoDTO : pedidoDTO.getItemDTOList()) {
-            ItemPedido itemPedido = new ItemPedido();
-
-            itemPedido.setProdutoId(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()));
-            itemPedido.setPedidoId(pedido);
-
-            itemPedido.setQuantidade(itemPedidoDTO.getQuantidade());
-            itemPedido.setValorUnitario(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()).getPreco());
-            itemPedido.setId(itemPedidoSave.save(itemPedido).getId());
-
-            validarProduto(itemPedidoDTO.getProdutoId(),fornecedorService.findById(pedidoDTO.getFornecedorId()));
-            itemPedidosList.add(itemPedido);
-        }
-
-        pedido.setItemList(itemPedidosList);
         return PedidoDTO.of(pedido);
 
     }
@@ -112,6 +95,23 @@ public class PedidoService {
         if (StringUtils.isEmpty(String.valueOf(pedidoDTO.getFornecedorId()))) {
             throw new IllegalArgumentException("FornecedorId não deve ser nulo/vazio");
         }
+    }
+
+    public List<ItemPedido> preencherLista (List<ItemPedidoDTO> itemPedidoDTO, Pedido pedido) {
+        List<ItemPedido> itemPedidoList = new ArrayList<>();
+        for (ItemPedidoDTO itemPedidoDTOList : itemPedidoDTO) {
+            ItemPedido itemPedido = new ItemPedido();
+
+            itemPedido.setProdutoId(produtoService.findProdutoById(itemPedidoDTOList.getProdutoId()));
+            itemPedido.setPedidoId(pedido);
+
+            itemPedido.setQuantidade(itemPedidoDTOList.getQuantidade());
+            itemPedido.setValorUnitario(produtoService.findProdutoById(itemPedidoDTOList.getProdutoId()).getPreco());
+
+            validarProduto(itemPedidoDTOList.getProdutoId(), fornecedorService.findById(pedido.getFornecedorId().getId()));
+            itemPedidoList.add(itemPedido);
+        }
+        return itemPedidoList;
     }
 
     public boolean validarProduto (Long produtoDTO, FornecedorDTO fornecedorDTO){
@@ -192,7 +192,7 @@ public class PedidoService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public Pedido findByPedidoId(Long id) {
+    public Pedido findPedidoById(Long id) {
         Optional<Pedido> pedidoOptional = this.iPedidoRepository.findById(id);
 
         if (pedidoOptional.isPresent()) {

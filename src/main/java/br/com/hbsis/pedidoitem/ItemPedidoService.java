@@ -1,6 +1,5 @@
 package br.com.hbsis.pedidoitem;
 
-import br.com.hbsis.pedido.Pedido;
 import br.com.hbsis.pedido.PedidoService;
 import br.com.hbsis.produto.ProdutoService;
 import org.apache.commons.lang.StringUtils;
@@ -31,10 +30,10 @@ public class ItemPedidoService {
         LOGGER.debug("Pedido: {}", itemPedidoDTO);
 
         ItemPedido itemPedido = new ItemPedido();
-        itemPedidoDTO.setProdutoId(itemPedidoDTO.getProdutoId());
-        itemPedidoDTO.setPedidoId(itemPedidoDTO.getPedidoId());
-        itemPedidoDTO.setQuantidade(itemPedidoDTO.getQuantidade());
-        itemPedidoDTO.setValorUnitario(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()).getPreco());
+        itemPedido.setProdutoId(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()));
+        itemPedido.setPedidoId(pedidoService.findPedidoById(itemPedidoDTO.getPedidoId()));
+        itemPedido.setQuantidade(itemPedidoDTO.getQuantidade());
+        itemPedido.setValorUnitario(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()).getPreco());
 
         this.validate(itemPedidoDTO);
 
@@ -99,7 +98,7 @@ public class ItemPedidoService {
             itemPedidoExistente.setValorUnitario(itemPedidoDTO.getValorUnitario());
 
             itemPedidoExistente.setProdutoId(produtoService.findProdutoById(itemPedidoDTO.getProdutoId()));
-            itemPedidoExistente.setPedidoId(pedidoService.findByPedidoId(itemPedidoDTO.getProdutoId()));
+            itemPedidoExistente.setPedidoId(pedidoService.findPedidoById(itemPedidoDTO.getProdutoId()));
 
             itemPedidoExistente = this.iItemPedidoRepository.save(itemPedidoExistente);
 
