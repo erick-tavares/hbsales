@@ -1,6 +1,7 @@
 package br.com.hbsis.funcionario;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 @Entity
 @Table (name = "funcionario")
@@ -11,6 +12,7 @@ public class Funcionario {
     private Long id;
     @Column(name = "nome", nullable = false, length = 50)
     private String nome;
+    @Email
     @Column(name = "email", nullable = false, length = 50)
     private String email;
     @Column(name = "uuid", unique = true, updatable = false, length = 36)

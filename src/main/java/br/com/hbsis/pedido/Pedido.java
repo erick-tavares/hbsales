@@ -1,14 +1,18 @@
 package br.com.hbsis.pedido;
 
 import br.com.hbsis.fornecedor.Fornecedor;
-import br.com.hbsis.produto.Produto;
+import br.com.hbsis.funcionario.Funcionario;
+import br.com.hbsis.pedidoitem.ItemPedido;
+import br.com.hbsis.periodovendas.PeriodoVendas;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table (name = "pedido")
 public class Pedido {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +26,18 @@ public class Pedido {
     private StatusPedido status;
 
     @ManyToOne
-    @JoinColumn(name = "fornecedor_id", referencedColumnName = "id")
-    private Fornecedor fornecedorId;
+    @JoinColumn(name = "funcionario_id", referencedColumnName = "id")
+    private Funcionario funcionarioId;
     @ManyToOne
-    @JoinColumn(name = "produto_id", referencedColumnName = "id")
-    private Produto produtoId;
+    @JoinColumn (name = "periodo_vendas_id", referencedColumnName = "id")
+    private PeriodoVendas periodoVendasId;
+    @ManyToOne
+    @JoinColumn (name = "fornecedor_id", referencedColumnName = "id")
+    private Fornecedor fornecedorId;
 
-    @Column(name = "quantidade_itens")
-    private int quantidadeItens;
+    @OneToMany (mappedBy = "pedidoId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itemList;
+
 
     @Override
     public String toString() {
@@ -38,18 +46,11 @@ public class Pedido {
                 ", codigo='" + codigo + '\'' +
                 ", dataCriacao=" + dataCriacao +
                 ", status=" + status +
+                ", funcionarioId=" + funcionarioId +
+                ", periodoVendasId=" + periodoVendasId +
                 ", fornecedorId=" + fornecedorId +
-                ", produtoId=" + produtoId +
-                ", quantidadeItens=" + quantidadeItens +
+                ", itemList=" + itemList +
                 '}';
-    }
-
-    public int getQuantidadeItens() {
-        return quantidadeItens;
-    }
-
-    public void setQuantidadeItens(int quantidadeItens) {
-        this.quantidadeItens = quantidadeItens;
     }
 
     public Long getId() {
@@ -68,6 +69,14 @@ public class Pedido {
         this.codigo = codigo;
     }
 
+    public Fornecedor getFornecedorId() {
+        return fornecedorId;
+    }
+
+    public void setFornecedorId(Fornecedor fornecedorId) {
+        this.fornecedorId = fornecedorId;
+    }
+
     public LocalDate getDataCriacao() {
         return dataCriacao;
     }
@@ -84,19 +93,27 @@ public class Pedido {
         this.status = status;
     }
 
-    public Fornecedor getFornecedorId() {
-        return fornecedorId;
+    public Funcionario getFuncionarioId() {
+        return funcionarioId;
     }
 
-    public void setFornecedorId(Fornecedor fornecedorId) {
-        this.fornecedorId = fornecedorId;
+    public void setFuncionarioId(Funcionario funcionarioId) {
+        this.funcionarioId = funcionarioId;
     }
 
-    public Produto getProdutoId() {
-        return produtoId;
+    public PeriodoVendas getPeriodoVendasId() {
+        return periodoVendasId;
     }
 
-    public void setProdutoId(Produto produtoId) {
-        this.produtoId = produtoId;
+    public void setPeriodoVendasId(PeriodoVendas periodoVendasId) {
+        this.periodoVendasId = periodoVendasId;
+    }
+
+    public List<ItemPedido> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<ItemPedido> itemList) {
+        this.itemList = itemList;
     }
 }

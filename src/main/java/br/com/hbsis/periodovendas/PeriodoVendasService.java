@@ -1,9 +1,6 @@
 package br.com.hbsis.periodovendas;
 
-import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.fornecedor.Fornecedor;
-import br.com.hbsis.linhacategoria.LinhaCategoria;
-import br.com.hbsis.produto.Produto;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,19 +90,23 @@ public class PeriodoVendasService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public PeriodoVendas findByFornecedorId(Fornecedor fornecedor) {
-        List<PeriodoVendas> periodoVendas = this.iPeriodoVendasRepository.findByFornecedorId_Id(fornecedor.getId());
+    public PeriodoVendas findPeriodoVendasById(Long id) {
+        Optional<PeriodoVendas> periodoVendasOptional = this.iPeriodoVendasRepository.findById(id);
 
-            return (PeriodoVendas) periodoVendas;
+        if (periodoVendasOptional.isPresent()) {
+            return periodoVendasOptional.get();
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
 
-//    public PeriodoVendas findByFornecedorId (Fornecedor fornecedor) {
-//        List<PeriodoVendas> listPeriodoVendas = this.iPeriodoVendasRepository.findByFornecedorId(fornecedor);
-//
-//            return (PeriodoVendas) listPeriodoVendas;
-//
-//    }
+    public List<PeriodoVendas> findByList (Fornecedor fornecedor) {
+        List<PeriodoVendas> listPeriodoVendas = this.iPeriodoVendasRepository.findByFornecedorId(fornecedor);
+
+            return listPeriodoVendas;
+
+    }
 
     public void validarPeriodo(PeriodoVendasDTO periodoVendasDTO, Fornecedor fornecedorId) {
 

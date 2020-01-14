@@ -1,6 +1,7 @@
 package br.com.hbsis.produto;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
+import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import java.io.PrintWriter;
 import java.text.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -84,7 +86,7 @@ public class ProdutoService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public Produto findByProdutoId(Long id) {
+    public Produto findProdutoById(Long id) {
         Optional<Produto> produtoOptional = this.iProdutoRepository.findById(id);
 
         if (produtoOptional.isPresent()) {
@@ -92,6 +94,13 @@ public class ProdutoService {
         }
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
+
+//    public List<Produto> findByList (Fornecedor fornecedor) {
+//        List<Produto> listaProduto = this.iProdutoRepository.findByFornedecodrId(fornecedor);
+//
+//        return listaProduto;
+//
+//    }
 
     public Optional<Produto> findByCodigoOptional(String codigo) {
         Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(codigo);

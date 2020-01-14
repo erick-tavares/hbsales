@@ -1,6 +1,6 @@
 package br.com.hbsis.exportimportcsv;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.MaskFormatter;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 
-@SpringBootApplication
+@Component
 public class ExportCSV {
 
     public PrintWriter exportarCSV (HttpServletResponse response, String header) throws IOException {

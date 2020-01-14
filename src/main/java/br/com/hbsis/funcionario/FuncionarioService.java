@@ -58,6 +58,16 @@ public class FuncionarioService {
         }
     }
 
+    public Funcionario findFuncionarioById(Long id) {
+        Optional<Funcionario> funcionarioOptional = this.iFuncionarioRepository.findById(id);
+
+        if (funcionarioOptional.isPresent()) {
+            return funcionarioOptional.get();
+        }
+
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
     public FuncionarioDTO findById(Long id) {
         Optional<Funcionario> funcionarioOptional = this.iFuncionarioRepository.findById(id);
 

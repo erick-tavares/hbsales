@@ -1,7 +1,5 @@
 package br.com.hbsis.pedido;
 
-import br.com.hbsis.periodovendas.PeriodoVendasDTO;
-import br.com.hbsis.periodovendas.PeriodoVendasService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
