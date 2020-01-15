@@ -1,26 +1,26 @@
 package br.com.hbsis.pedido;
 
-import br.com.hbsis.pedidoitem.ItemPedidoDTO;
+import java.util.List;
 
 public class InvoiceDTO {
-    private String fornecedorCnpj;
+    private String cnpjFornecedor;
     private String employeeUuid;
-    private ItemPedidoDTO itemPedidoDTO;
-    private Double valorTotal;
+    private List<InvoiceItemDTO> invoiceItemDTOSet;
+    private double totalValue;
 
-    public InvoiceDTO(String fornecedorCnpj, String employeeUuid, ItemPedidoDTO itemPedidoDTO, Double valorTotal) {
-        this.fornecedorCnpj = fornecedorCnpj;
+    public InvoiceDTO(String cnpjFornecedor, String employeeUuid, List<InvoiceItemDTO> invoiceItemDTOSet, double totalValue) {
+        this.cnpjFornecedor = cnpjFornecedor;
         this.employeeUuid = employeeUuid;
-        this.itemPedidoDTO = itemPedidoDTO;
-        this.valorTotal = valorTotal;
+        this.invoiceItemDTOSet = invoiceItemDTOSet;
+        this.totalValue = totalValue;
     }
 
-    public String getFornecedorCnpj() {
-        return fornecedorCnpj;
+    public String getCnpjFornecedor() {
+        return cnpjFornecedor;
     }
 
-    public void setFornecedorCnpj(String fornecedorCnpj) {
-        this.fornecedorCnpj = fornecedorCnpj;
+    public void setCnpjFornecedor(String cnpjFornecedor) {
+        this.cnpjFornecedor = cnpjFornecedor;
     }
 
     public String getEmployeeUuid() {
@@ -31,19 +31,21 @@ public class InvoiceDTO {
         this.employeeUuid = employeeUuid;
     }
 
-    public ItemPedidoDTO getItemPedidoDTO() {
-        return itemPedidoDTO;
+    public List<InvoiceItemDTO> getInvoiceItemDTOSet() {
+        return invoiceItemDTOSet;
     }
 
-    public void setItemPedidoDTO(ItemPedidoDTO itemPedidoDTO) {
-        this.itemPedidoDTO = itemPedidoDTO;
+    public void setInvoiceItemDTOSet(List<InvoiceItemDTO> invoiceItemDTOSet) {
+        this.invoiceItemDTOSet = invoiceItemDTOSet;
     }
 
-    public Double getValorTotal() {
-        return valorTotal;
+    public double getTotalValue() {
+        return totalValue;
     }
 
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setTotalValue(double totalValue) {
+        this.totalValue = totalValue;
     }
 }
+
+

@@ -5,9 +5,6 @@ public class EmployeeDTO {
     private String employeeName;
     private String employeeUuid;
 
-
-    public EmployeeDTO() {
-    }
     public EmployeeDTO(String employeeName, String employeeUuid) {
         this.employeeName = employeeName;
         this.employeeUuid = employeeUuid;

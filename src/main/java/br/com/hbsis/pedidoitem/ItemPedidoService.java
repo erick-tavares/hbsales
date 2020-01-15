@@ -74,15 +74,6 @@ public class ItemPedidoService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public ItemPedido findByItemPedidoId(Long id) {
-        Optional<ItemPedido> itemPedidoOptional = this.iItemPedidoRepository.findById(id);
-
-        if (itemPedidoOptional.isPresent()) {
-            return itemPedidoOptional.get();
-        }
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
-
     public ItemPedidoDTO update(ItemPedidoDTO itemPedidoDTO, Long id) {
         Optional<ItemPedido> itemPedidoExistenteOptional = this.iItemPedidoRepository.findById(id);
 
