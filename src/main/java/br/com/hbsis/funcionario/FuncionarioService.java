@@ -96,8 +96,6 @@ public class FuncionarioService {
 
             return FuncionarioDTO.of(funcionarioExistente);
         }
-
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 

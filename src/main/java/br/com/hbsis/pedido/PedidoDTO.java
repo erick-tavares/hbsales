@@ -11,14 +11,14 @@ public class PedidoDTO {
     private Long id;
     private String codigo;
     private LocalDate dataCriacao;
-    private StatusPedido status;
+    private String status;
     private Long funcionarioId;
     private Long periodoVendasId;
     private List<ItemPedidoDTO> itemDTOList;
     private Long fornecedorId;
 
 
-    public PedidoDTO(Long id, String codigo, LocalDate dataCriacao, StatusPedido status, Long funcionarioId, Long periodoVendasId, List<ItemPedidoDTO> itemDTOList, Long fornecedorId) {
+    public PedidoDTO(Long id, String codigo, LocalDate dataCriacao, String status, Long funcionarioId, Long periodoVendasId, List<ItemPedidoDTO> itemDTOList, Long fornecedorId) {
         this.id = id;
         this.codigo = codigo;
         this.dataCriacao = dataCriacao;
@@ -89,11 +89,11 @@ public class PedidoDTO {
         this.dataCriacao = dataCriacao;
     }
 
-    public StatusPedido getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(StatusPedido status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

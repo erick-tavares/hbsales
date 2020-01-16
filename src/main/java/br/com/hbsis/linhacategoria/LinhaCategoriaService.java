@@ -83,7 +83,6 @@ public class LinhaCategoriaService {
 
     public Optional<LinhaCategoria> findByCodigoOptional(String codigo) {
         Optional<LinhaCategoria> linhaCategoriaOptional = this.iLinhaCategoriaRepository.findByCodigo(codigo);
-
         return linhaCategoriaOptional;
     }
 
@@ -93,7 +92,6 @@ public class LinhaCategoriaService {
         if (linhaCategoriaOptional.isPresent()) {
             return LinhaCategoriaDTO.of(linhaCategoriaOptional.get());
         }
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 

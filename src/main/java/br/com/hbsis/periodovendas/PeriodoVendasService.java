@@ -86,7 +86,6 @@ public class PeriodoVendasService {
         if (periodoVendasOptional.isPresent()) {
             return PeriodoVendasDTO.of(periodoVendasOptional.get());
         }
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
@@ -96,16 +95,14 @@ public class PeriodoVendasService {
         if (periodoVendasOptional.isPresent()) {
             return periodoVendasOptional.get();
         }
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
 
-    public List<PeriodoVendas> findByList (Fornecedor fornecedor) {
+    public List<PeriodoVendas> findByList(Fornecedor fornecedor) {
         List<PeriodoVendas> listPeriodoVendas = this.iPeriodoVendasRepository.findByFornecedorId(fornecedor);
 
-            return listPeriodoVendas;
-
+        return listPeriodoVendas;
     }
 
     public void validarPeriodo(PeriodoVendasDTO periodoVendasDTO, Fornecedor fornecedorId) {
@@ -113,22 +110,22 @@ public class PeriodoVendasService {
         List<PeriodoVendas> periodoExistente = iPeriodoVendasRepository.findByFornecedorId(fornecedorId);
         for (PeriodoVendas periodo : periodoExistente) {
             if (periodo.getFornecedorId().getId().equals(periodoVendasDTO.getFornecedorId())) {
-                if (!periodo.getId().equals(periodoVendasDTO.getId())){
+                if (!periodo.getId().equals(periodoVendasDTO.getId())) {
 
-                if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getFimVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getFimVendas())
-                        || periodoVendasDTO.getInicioVendas().isEqual(periodo.getFimVendas())) {
-                    throw new IllegalArgumentException("A data de início de período já existe entre outro período");
-                }
-                if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getInicioVendas())
-                        || periodoVendasDTO.getFimVendas().isEqual(periodo.getInicioVendas())) {
-                    throw new IllegalArgumentException("A data de fim de período já existe entre outro período");
-                }
-                if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getFimVendas())) {
-                    throw new IllegalArgumentException("A data de período já existe entre outro período");
-                }
-                if (periodoVendasDTO.getRetiradaPedido().isBefore(periodo.getFimVendas())) {
-                    throw new IllegalArgumentException("A data de retirada do pedido é inválida");
-                }
+                    if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getFimVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getFimVendas())
+                            || periodoVendasDTO.getInicioVendas().isEqual(periodo.getFimVendas())) {
+                        throw new IllegalArgumentException("A data de início de período já existe entre outro período");
+                    }
+                    if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getInicioVendas())
+                            || periodoVendasDTO.getFimVendas().isEqual(periodo.getInicioVendas())) {
+                        throw new IllegalArgumentException("A data de fim de período já existe entre outro período");
+                    }
+                    if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getFimVendas())) {
+                        throw new IllegalArgumentException("A data de período já existe entre outro período");
+                    }
+                    if (periodoVendasDTO.getRetiradaPedido().isBefore(periodo.getFimVendas())) {
+                        throw new IllegalArgumentException("A data de retirada do pedido é inválida");
+                    }
                 }
             }
         }

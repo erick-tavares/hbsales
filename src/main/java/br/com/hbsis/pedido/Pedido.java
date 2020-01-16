@@ -23,7 +23,7 @@ public class Pedido {
     private LocalDate dataCriacao;
 
     @Column (name = "status", nullable = false)
-    private StatusPedido status;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "funcionario_id", referencedColumnName = "id")
@@ -85,11 +85,11 @@ public class Pedido {
         this.dataCriacao = dataCriacao;
     }
 
-    public StatusPedido getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(StatusPedido status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

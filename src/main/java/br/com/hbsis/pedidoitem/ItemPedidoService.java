@@ -39,7 +39,6 @@ public class ItemPedidoService {
 
         itemPedido = this.iItemPedidoRepository.save(itemPedido);
 
-
         return ItemPedidoDTO.of(itemPedido);
     }
 
@@ -70,7 +69,6 @@ public class ItemPedidoService {
         if (itemPedidoOptional.isPresent()) {
             return ItemPedidoDTO.of(itemPedidoOptional.get());
         }
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
@@ -95,7 +93,6 @@ public class ItemPedidoService {
 
             return ItemPedidoDTO.of(itemPedidoExistente);
         }
-
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 

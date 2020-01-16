@@ -2,6 +2,7 @@ package br.com.hbsis.produto;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
+import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public class ProdutoService {
     public Optional<Produto> findByCodigoOptional(String codigo) {
         Optional<Produto> produtoOptional = this.iProdutoRepository.findByCodigo(codigo);
 
-        return produtoOptional;
+            return produtoOptional;
     }
 
     public ProdutoDTO save(ProdutoDTO produtoDTO) {

@@ -50,7 +50,7 @@ public class ImportCSV {
             while ((linhaDoArquivo = leitor.readLine()) != null) {
                 String[] categoriaCSV = linhaDoArquivo.split(quebraDeLinha);
                 Optional<Fornecedor> fornecedorOptional = Optional.ofNullable(fornecedorService.findByCnpj(categoriaCSV[3].replaceAll("\\D", "")));
-                Optional<CategoriaProduto> categoriaProdutoExiste = categoriaProdutoService.findByCodigoOptional(categoriaCSV[1]);
+                Optional<CategoriaProduto> categoriaProdutoExiste = Optional.ofNullable(categoriaProdutoService.findByCodigo(categoriaCSV[1]));
 
                 if (categoriaProdutoExiste.isPresent() && fornecedorOptional.isPresent()) {
 
@@ -189,7 +189,7 @@ public class ImportCSV {
                 categoriaProduto.setFornecedorId(fornecedorService.findFornecedorById(id));
 
                 categoriaProdutoService.update(CategoriaProdutoDTO.of(categoriaProduto), categoriaProdutoExistente.get().getId());
-                LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProduto.getId());
+                LOGGER.info("Atualizando categoria de produto... id: [{}]", categoriaProduto.getId());
             } else {
                 CategoriaProduto categoriaProduto = new CategoriaProduto();
                 categoriaProduto.setNome(produtoCSV[10]);

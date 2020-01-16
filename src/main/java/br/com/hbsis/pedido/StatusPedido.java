@@ -6,11 +6,12 @@ package br.com.hbsis.pedido;
         CANCELADO("Cancelado"),
         RETIRADO("Retirado");
 
-        private String descricao;
+        private final String descricao;
 
         StatusPedido(String descricao) {
             this.descricao = descricao;
         }
+
         public String getDescricao() {
             return descricao;
         }
