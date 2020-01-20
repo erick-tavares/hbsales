@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping ("pedidos")
@@ -33,6 +36,13 @@ public class PedidoRest {
         LOGGER.info("Recebendo find by ID... id: [{}]", id);
 
         return this.pedidoService.findById(id);
+    }
+
+    @GetMapping("/export-produtos/{id}")
+    public void exportCSV(HttpServletResponse response, @PathVariable("id") Long id) throws IOException, ParseException {
+        LOGGER.info("Exportando CSV");
+
+        this.pedidoService.exportCSV(response, id);
     }
 
     @PutMapping("/{id}")

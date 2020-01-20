@@ -45,11 +45,10 @@ public class Pedido {
                 "id=" + id +
                 ", codigo='" + codigo + '\'' +
                 ", dataCriacao=" + dataCriacao +
-                ", status=" + status +
+                ", status='" + status + '\'' +
                 ", funcionarioId=" + funcionarioId +
                 ", periodoVendasId=" + periodoVendasId +
                 ", fornecedorId=" + fornecedorId +
-                ", itemList=" + itemList +
                 '}';
     }
 

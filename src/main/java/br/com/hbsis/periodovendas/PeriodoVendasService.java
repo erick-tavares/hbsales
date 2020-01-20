@@ -99,7 +99,7 @@ public class PeriodoVendasService {
     }
 
 
-    public List<PeriodoVendas> findByList(Fornecedor fornecedor) {
+    public List<PeriodoVendas> findByFornecedor(Fornecedor fornecedor) {
         List<PeriodoVendas> listPeriodoVendas = this.iPeriodoVendasRepository.findByFornecedorId(fornecedor);
 
         return listPeriodoVendas;

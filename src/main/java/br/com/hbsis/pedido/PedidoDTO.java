@@ -38,7 +38,6 @@ public class PedidoDTO {
                 ", status=" + status +
                 ", funcionarioId=" + funcionarioId +
                 ", periodoVendasId=" + periodoVendasId +
-                ", itemDTOList=" + itemDTOList +
                 ", fornecedorId=" + fornecedorId +
                 '}';
     }
