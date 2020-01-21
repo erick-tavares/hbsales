@@ -13,7 +13,6 @@ import br.com.hbsis.produto.ProdutoDTO;
 import br.com.hbsis.produto.ProdutoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

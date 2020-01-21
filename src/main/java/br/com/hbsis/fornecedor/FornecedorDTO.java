@@ -1,24 +1,17 @@
 package br.com.hbsis.fornecedor;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class FornecedorDTO {
 
     private Long id;
-    @NotBlank(message = "razaoSocial é obrigatório")
     private String razaoSocial;
-    @NotBlank(message = "cnpj é obrigatório")
     @Size(min = 14, max = 14)
     private String cnpj;
-    @NotBlank(message = "nome é obrigatório")
     private String nome;
-    @NotBlank(message = "endereco é obrigatório")
     private String endereco;
-    @NotBlank(message = "telefone é obrigatório")
     private String telefone;
-    @NotBlank(message = "email é obrigatório")
     @Email
     private String email;
 

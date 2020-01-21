@@ -1,15 +1,12 @@
 package br.com.hbsis.pedidoitem;
 
-import br.com.hbsis.pedido.Pedido;
 import br.com.hbsis.pedido.PedidoService;
-import br.com.hbsis.periodovendas.PeriodoVendas;
 import br.com.hbsis.produto.ProdutoService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,11 +70,6 @@ public class ItemPedidoService {
             return ItemPedidoDTO.of(itemPedidoOptional.get());
         }
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
-
-    public List<ItemPedido> findByPedido(Pedido pedido) {
-        List<ItemPedido> listItemPedido = this.iItemPedidoRepository.findByPedidoId(pedido);
-        return listItemPedido;
     }
 
     public ItemPedidoDTO update(ItemPedidoDTO itemPedidoDTO, Long id) {

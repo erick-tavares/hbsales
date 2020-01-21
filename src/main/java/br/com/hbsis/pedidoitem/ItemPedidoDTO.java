@@ -35,9 +35,6 @@ public class ItemPedidoDTO {
         this.pedidoId = pedidoId;
     }
 
-    public ItemPedidoDTO() {
-
-    }
 
     public Long getPedidoId() {
         return pedidoId;

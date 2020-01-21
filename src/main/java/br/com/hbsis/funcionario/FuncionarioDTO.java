@@ -1,17 +1,14 @@
 package br.com.hbsis.funcionario;
 
-import javax.validation.constraints.NotBlank;
 
 public class FuncionarioDTO {
 
     private Long id;
-    @NotBlank(message = "nome é obrigatório")
     private String nome;
-    @NotBlank(message = "e-mail é obrigatório")
     private String email;
     private String uuid;
 
-    public FuncionarioDTO(Long id, @NotBlank(message = "nome é obrigatório") String nome, @NotBlank(message = "e-mail é obrigatório") String email, @NotBlank(message = "UUID é obrigatório") String uuid) {
+    public FuncionarioDTO(Long id, String nome, String email, String uuid) {
         this.id = id;
         this.nome = nome;
         this.email = email;

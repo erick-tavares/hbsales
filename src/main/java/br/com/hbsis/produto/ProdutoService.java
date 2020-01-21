@@ -2,7 +2,6 @@ package br.com.hbsis.produto;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
 import br.com.hbsis.linhacategoria.LinhaCategoriaService;
-import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

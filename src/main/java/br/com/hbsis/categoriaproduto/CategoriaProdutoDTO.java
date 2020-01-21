@@ -5,7 +5,6 @@ import javax.validation.constraints.NotBlank;
 
 public class CategoriaProdutoDTO {
     private Long id;
-    @NotBlank(message = "nome é obrigatório")
     private String nome;
     private Long fornecedorId;
     @NotBlank(message = "código deve ter entre 1 a 4 números")
