@@ -10,6 +10,10 @@ public class EmployeeDTO {
         this.employeeUuid = employeeUuid;
     }
 
+    public EmployeeDTO() {
+
+    }
+
     public String getEmployeeName() {
         return employeeName;
     }
