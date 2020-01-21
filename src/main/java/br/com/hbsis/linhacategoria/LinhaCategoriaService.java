@@ -1,14 +1,18 @@
 package br.com.hbsis.linhacategoria;
 
+import br.com.hbsis.categoriaproduto.CategoriaProduto;
 import br.com.hbsis.categoriaproduto.CategoriaProdutoService;
 import br.com.hbsis.exportimportcsv.ExportCSV;
+import br.com.hbsis.exportimportcsv.ImportCSV;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,11 +23,13 @@ public class LinhaCategoriaService {
     private final ILinhaCategoriaRepository iLinhaCategoriaRepository;
     private final CategoriaProdutoService categoriaProdutoService;
     private final ExportCSV exportCSV;
+    private final ImportCSV importCSV;
 
-    public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService, ExportCSV exportCSV) {
+    public LinhaCategoriaService(ILinhaCategoriaRepository iLinhaCategoriaRepository, CategoriaProdutoService categoriaProdutoService, ExportCSV exportCSV, ImportCSV importCSV) {
         this.iLinhaCategoriaRepository = iLinhaCategoriaRepository;
         this.categoriaProdutoService = categoriaProdutoService;
         this.exportCSV = exportCSV;
+        this.importCSV = importCSV;
     }
 
     public LinhaCategoriaDTO save(LinhaCategoriaDTO linhaCategoriaDTO) {
@@ -134,6 +140,41 @@ public class LinhaCategoriaService {
         this.iLinhaCategoriaRepository.deleteById(id);
     }
 
+
+    public void importLinhaCategoriaCSV(MultipartFile importLinhaCategoria) {
+        List<List<String>> listaCSV = importCSV.importCSV(importLinhaCategoria);
+
+        for (List<String> strings : listaCSV) {
+            String codigo = strings.get(0);
+            String nome = strings.get(1);
+            String categoria = strings.get(2);
+
+            Optional<CategoriaProduto> categoriaProdutoOptional = Optional.ofNullable(categoriaProdutoService.findByCodigo(categoria));
+            Optional<LinhaCategoria> linhaCategoriaExiste = this.findByCodigoOptional(codigo);
+
+            if (linhaCategoriaExiste.isPresent() && categoriaProdutoOptional.isPresent()) {
+
+                LinhaCategoria linhaCategoria = linhaCategoriaExiste.get();
+                linhaCategoria.setCodigo(codigo);
+                linhaCategoria.setNome(nome);
+                linhaCategoria.setCategoriaId(categoriaProdutoService.findCategoriaProdutoById(categoriaProdutoService.findByCodigo(categoria).getId()));
+
+                this.update(LinhaCategoriaDTO.of(linhaCategoria), linhaCategoriaExiste.get().getId());
+                LOGGER.info("Atualizando linha de categoria ... id: [{}]", linhaCategoria.getId());
+
+            } else {
+                LinhaCategoria linhaCategoria = new LinhaCategoria();
+                linhaCategoria.setCodigo(codigo);
+                linhaCategoria.setNome(nome);
+
+                CategoriaProduto categoriaProduto = categoriaProdutoService.findByCodigo(categoria);
+                linhaCategoria.setCategoriaId(categoriaProduto);
+
+                this.save(LinhaCategoriaDTO.of(linhaCategoria));
+                LOGGER.info("Importando linha de categoria... id: [{}]", linhaCategoria.getId());
+            }
+        }
+    }
 
     public void exportCSV(HttpServletResponse response) throws IOException {
         String header = "Código da Linha;Linha da categoria;Código da categoria;Categoria";

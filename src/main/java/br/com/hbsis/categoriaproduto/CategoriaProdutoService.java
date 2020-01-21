@@ -1,16 +1,20 @@
 package br.com.hbsis.categoriaproduto;
 
 import br.com.hbsis.exportimportcsv.ExportCSV;
+import br.com.hbsis.exportimportcsv.ImportCSV;
+import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,11 +25,13 @@ public class CategoriaProdutoService {
     private final ICategoriaProdutoRepository iCategoriaProdutoRepository;
     private final FornecedorService fornecedorService;
     private final ExportCSV exportCSV;
+    private final ImportCSV importCSV;
 
-    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV) {
+    public CategoriaProdutoService(ICategoriaProdutoRepository iCategoriaProdutoRepository, FornecedorService fornecedorService, ExportCSV exportCSV, ImportCSV importCSV) {
         this.fornecedorService = fornecedorService;
         this.iCategoriaProdutoRepository = iCategoriaProdutoRepository;
         this.exportCSV = exportCSV;
+        this.importCSV = importCSV;
     }
 
     public String gerarCodigoCategoria(Long idFornecedor, String codigoDoUsuario) {
@@ -172,6 +178,43 @@ public class CategoriaProdutoService {
         LOGGER.info("Executando delete para categoria de ID: [{}]", id);
 
         this.iCategoriaProdutoRepository.deleteById(id);
+    }
+
+    public void importCategoriaCSV(MultipartFile importCategoria) {
+
+        List<List<String>> listaCSV = importCSV.importCSV(importCategoria);
+        for (List<String> strings : listaCSV) {
+            String nome = strings.get(0);
+            String codigo = strings.get(1);
+            String cnpj = strings.get(3).replaceAll("\\D", "");
+
+
+            Optional<Fornecedor> fornecedorOptional = Optional.ofNullable(fornecedorService.findByCnpj(cnpj));
+            Optional<CategoriaProduto> categoriaProdutoExiste = Optional.ofNullable(this.findByCodigo(codigo));
+
+            if (categoriaProdutoExiste.isPresent() && fornecedorOptional.isPresent()) {
+
+                CategoriaProduto categoriaProduto = categoriaProdutoExiste.get();
+                categoriaProduto.setNome(nome);
+                categoriaProduto.setCodigo(codigo);
+                Fornecedor fornecedor = fornecedorService.findByCnpj(cnpj);
+                categoriaProduto.setFornecedorId(fornecedor);
+
+                this.update(CategoriaProdutoDTO.of(categoriaProduto), categoriaProdutoExiste.get().getId());
+                LOGGER.info("Alterando categoria de produto... id: [{}]", categoriaProduto.getId());
+
+            } else {
+                CategoriaProduto categoriaProduto = new CategoriaProduto();
+                categoriaProduto.setNome(nome);
+                categoriaProduto.setCodigo(codigo);
+                Fornecedor fornecedor = fornecedorService.findByCnpj(cnpj);
+                categoriaProduto.setFornecedorId(fornecedor);
+
+                this.save(CategoriaProdutoDTO.of(categoriaProduto));
+                LOGGER.info("Importando categoria de produto... id: [{}]", categoriaProduto.getId());
+            }
+        }
+
     }
 
 }

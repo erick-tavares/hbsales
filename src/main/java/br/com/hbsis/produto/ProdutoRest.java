@@ -1,6 +1,5 @@
 package br.com.hbsis.produto;
 
-import br.com.hbsis.exportimportcsv.ImportCSV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,10 @@ public class ProdutoRest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoRest.class);
 
     private final ProdutoService produtoService;
-    private final ImportCSV importCSV;
 
     @Autowired
-    public ProdutoRest(ProdutoService produtoService, ImportCSV importCSV) {
+    public ProdutoRest(ProdutoService produtoService) {
         this.produtoService = produtoService;
-        this.importCSV = importCSV;
     }
 
     @PostMapping
@@ -59,14 +56,14 @@ public class ProdutoRest {
 
     @PostMapping (value = "/import-produtos", consumes = "multipart/form-data")
     public void importCSV (@RequestParam("file") MultipartFile importProduto) {
-        importCSV.importProdutoCSV(importProduto);
+        this.produtoService.importProdutoCSV(importProduto);
     }
 
     @PostMapping (value = "/import-produtos/{id}", consumes = "multipart/form-data")
     public void importCSVPorFornecedor (@RequestParam("file") MultipartFile importProdutoPorFornecedor, @PathVariable("id") Long id)throws IOException {
-        importCSV.importCSVCategoriaPorFornecedor(importProdutoPorFornecedor, id);
-        importCSV.importCSVLinhaPorFornecedor(importProdutoPorFornecedor, id);
-        importCSV.importCSVProdutoPorFornecedor(importProdutoPorFornecedor, id);
+        this.produtoService.importCSVCategoriaPorFornecedor(importProdutoPorFornecedor,id);
+        this.produtoService.importCSVLinhaPorFornecedor(importProdutoPorFornecedor,id);
+        this.produtoService.importCSVProdutoPorFornecedor(importProdutoPorFornecedor,id);
     }
 
     @GetMapping("/export-produtos")
