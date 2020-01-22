@@ -38,11 +38,18 @@ public class PedidoRest {
         return this.pedidoService.findById(id);
     }
 
-    @GetMapping("/export-produtos/{id}")
-    public void exportCSV(HttpServletResponse response, @PathVariable("id") Long id) throws IOException, ParseException {
+    @GetMapping("/export-produtos-periodo/{periodoId}")
+    public void exportCSVPorPeriodo(HttpServletResponse response, @PathVariable("periodoId") Long id) throws IOException, ParseException {
         LOGGER.info("Exportando CSV");
 
-        this.pedidoService.exportCSV(response, id);
+        this.pedidoService.exportCSVPorPeriodoPorFornecedor(response, id);
+    }
+
+    @GetMapping("/export-produtos-funcionario/{fornecedorId}")
+    public void exportCSVPorFuncionario(HttpServletResponse response, @PathVariable("fornecedorId") Long id) throws IOException, ParseException {
+        LOGGER.info("Exportando CSV");
+
+        this.pedidoService.exportCSVPorFornecedorPorFuncionario(response, id);
     }
 
     @PutMapping("/{id}")

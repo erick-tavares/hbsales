@@ -5,6 +5,7 @@ import br.com.hbsis.exportimportcsv.ItemPedidoModel;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorDTO;
 import br.com.hbsis.fornecedor.FornecedorService;
+import br.com.hbsis.funcionario.Funcionario;
 import br.com.hbsis.funcionario.FuncionarioDTO;
 import br.com.hbsis.funcionario.FuncionarioService;
 import br.com.hbsis.pedidoitem.ItemPedido;
@@ -57,7 +58,7 @@ public class PedidoService {
 
         validarPeriodoDoFornecedor(periodoVendasService.findById(pedidoDTO.getPeriodoVendasId()), fornecedorService.findById(pedidoDTO.getFornecedorId()));
 
-        validarProdutoDoFornecedor(pedidoDTO.getItemDTOList(),fornecedorService.findFornecedorById(pedidoDTO.getFornecedorId()));
+        validarProdutoDoFornecedor(pedidoDTO.getItemDTOList(), fornecedorService.findFornecedorById(pedidoDTO.getFornecedorId()));
         pedidoDTO.setStatus(StatusPedido.ATIVO.getDescricao().toUpperCase());
         this.validate(pedidoDTO);
 
@@ -111,22 +112,46 @@ public class PedidoService {
         }
     }
 
+    public void exportCSVPorFornecedorPorFuncionario(HttpServletResponse response, Long id) throws IOException, java.text.ParseException {
+        String header = "Funcionário;Produto;Quantidade;Fornecedor";
+        exportCSV.exportarCSV(response, header);
+        PrintWriter printWriter = response.getWriter();
 
-    public void exportCSV(HttpServletResponse response, Long id) throws IOException, ParseException, java.text.ParseException {
+        Fornecedor fornecedor = fornecedorService.findFornecedorById(id);
+        String fornecedorDoPedido = (fornecedor.getRazaoSocial()) + " - " + exportCSV.mask(fornecedor.getCnpj());
+
+        List<Pedido> pedidosDoFornecedor = this.findByFornecedor(fornecedor);
+
+        List<ItemPedidoModel> itemConferido = new ArrayList<>();
+
+        for (Pedido pedidoCSVFornecedor : pedidosDoFornecedor) {
+            Funcionario funcionario = funcionarioService.findFuncionarioById(pedidoCSVFornecedor.getFuncionarioId().getId());
+                    itemConferido = popularListaCSVPorFuncionario(pedidoCSVFornecedor.getItemList(), itemConferido, funcionario.getNome());
+        }
+
+        for (ItemPedidoModel itemModel : itemConferido) {
+            printWriter.println(itemModel.getFuncionario() + ";" +
+                    itemModel.getProduto().getNome() + ";" +
+                    itemModel.getQuantidade() + ";" +
+                    fornecedorDoPedido);
+        }
+    }
+
+
+    public void exportCSVPorPeriodoPorFornecedor(HttpServletResponse response, Long id) throws IOException, ParseException, java.text.ParseException {
         String header = "Produto;Quantidade;Fornecedor";
         exportCSV.exportarCSV(response, header);
-
         PrintWriter printWriter = response.getWriter();
 
         PeriodoVendas periodoVendas = periodoVendasService.findPeriodoVendasById(id);
         Fornecedor fornecedorDoPeriodo = periodoVendas.getFornecedorId();
 
-        List<Pedido> pedidoLista = findByPeriodo(periodoVendas);
+        List<Pedido> pedidoLista = this.findByPeriodo(periodoVendas);
         String pedidoFornecedor = (fornecedorDoPeriodo.getRazaoSocial()) + " - " + exportCSV.mask(fornecedorDoPeriodo.getCnpj());
 
         List<ItemPedidoModel> itemConferido = new ArrayList<>();
         for (Pedido pedidoCSVObjeto : pedidoLista) {
-            itemConferido = popularListaCSV(pedidoCSVObjeto.getItemList(), itemConferido);
+            itemConferido = popularListaCSVPorPeriodo(pedidoCSVObjeto.getItemList(), itemConferido);
 
         }
         for (ItemPedidoModel itemPedidoModel : itemConferido) {
@@ -135,7 +160,7 @@ public class PedidoService {
     }
 
 
-    private List<ItemPedidoModel> popularListaCSV(List<ItemPedido> itens, List<ItemPedidoModel> itemRetorno) {
+    private List<ItemPedidoModel> popularListaCSVPorPeriodo(List<ItemPedido> itens, List<ItemPedidoModel> itemRetorno) {
 
         for (ItemPedido item : itens) {
             if (itemRetorno.isEmpty()) {
@@ -149,6 +174,29 @@ public class PedidoService {
 
                     } else if ((itemRetorno.indexOf(item1) + 1) == itemRetorno.size()) {
                         itemRetorno.add(new ItemPedidoModel(item.getQuantidade(), item.getProdutoId()));
+                        break;
+                    }
+                }
+            }
+        }
+
+        return itemRetorno;
+    }
+
+    private List<ItemPedidoModel> popularListaCSVPorFuncionario(List<ItemPedido> itens, List<ItemPedidoModel> itemRetorno, String funcionario) {
+
+        for (ItemPedido item : itens) {
+            if (itemRetorno.isEmpty()) {
+                itemRetorno.add(new ItemPedidoModel(item.getQuantidade(), item.getProdutoId(), funcionario));
+
+            } else {
+                for (ItemPedidoModel item1 : itemRetorno) {
+                    if (item.getProdutoId().getId().equals(item1.getProduto().getId()) && funcionario.equals(item1.getFuncionario())) {
+                        item1.setQuantidade(item1.getQuantidade() + item.getQuantidade());
+                        break;
+
+                    } else if ((itemRetorno.indexOf(item1) + 1) == itemRetorno.size()) {
+                        itemRetorno.add(new ItemPedidoModel(item.getQuantidade(), item.getProdutoId(), funcionario));
                         break;
                     }
                 }
@@ -206,10 +254,14 @@ public class PedidoService {
     public List<Pedido> findByPeriodo(PeriodoVendas periodoVendas) {
         List<Pedido> listPedido = this.iPedidoRepository.findByPeriodoVendasId(periodoVendas);
 
-
         return listPedido;
     }
 
+    public List<Pedido> findByFornecedor(Fornecedor fornecedor) {
+        List<Pedido> listPedido = this.iPedidoRepository.findByFornecedorId(fornecedor);
+
+        return listPedido;
+    }
 
     public PedidoDTO update(PedidoDTO pedidoDTO, Long id) {
         Optional<Pedido> pedidoExistenteOptional = this.iPedidoRepository.findById(id);
@@ -269,18 +321,6 @@ public class PedidoService {
         }
         return invoiceItemDTOSet;
     }
-
-//    public void validarProdutoDoFornecedor(List<ItemPedidoDTO> itemDTO, Fornecedor fornecedor) {
-//
-//        LOGGER.info("Validando produto do fornecedor");
-//        for (ItemPedidoDTO item : itemDTO) {
-//            Long fornecedorId = produtoService.findProdutoById(item.getProdutoId()).getLinhaCategoriaId().getCategoriaId().getFornecedorId().getId();
-//
-//            if (!fornecedorId.equals(fornecedor.getId())){
-//                throw new IllegalArgumentException("O item não pertence ao fornecedor");
-//            }
-//        }
-//    }
 
 
     public boolean validarProdutoDoFornecedor(List<ItemPedidoDTO> itemDTO, Fornecedor fornecedor) {
