@@ -63,7 +63,7 @@ public class ProdutoRest {
     public void importCSVPorFornecedor (@RequestParam("file") MultipartFile importProdutoPorFornecedor, @PathVariable("id") Long id)throws IOException {
         this.produtoService.importCSVCategoriaPorFornecedor(importProdutoPorFornecedor,id);
         this.produtoService.importCSVLinhaPorFornecedor(importProdutoPorFornecedor,id);
-        this.produtoService.importCSVProdutoPorFornecedor(importProdutoPorFornecedor,id);
+        this.produtoService.importProdutoCSV(importProdutoPorFornecedor);
     }
 
     @GetMapping("/export-produtos")

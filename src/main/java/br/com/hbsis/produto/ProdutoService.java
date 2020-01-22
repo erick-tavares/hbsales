@@ -208,7 +208,7 @@ public class ProdutoService {
             String linhaCategoriaCod = strings.get(6);
 
             Optional<LinhaCategoria> linhaCategoriaOptional = Optional.ofNullable(linhaCategoriaService.findByCodigo(linhaCategoriaCod));
-            Optional<Produto> produtoExiste = this.findByCodigoOptional(codigo);
+            Optional<Produto> produtoExiste = this.findByCodigoOptional(this.gerarCodigoProduto(codigo));
 
             if (produtoExiste.isPresent() && linhaCategoriaOptional.isPresent()) {
 
@@ -221,7 +221,7 @@ public class ProdutoService {
                 produto.setUnidadeMedidaPeso(unidadeMedidaPeso);
                 produto.setValidade(LocalDate.parse(validade, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
-                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaCod);
+                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaService.gerarCodigoLinhaCategoria(linhaCategoriaCod));
                 produto.setLinhaCategoriaId(linhaCategoria);
 
                 this.update(ProdutoDTO.of(produto), produtoExiste.get().getId());
@@ -237,7 +237,7 @@ public class ProdutoService {
                 produto.setUnidadeMedidaPeso(unidadeMedidaPeso);
                 produto.setValidade(LocalDate.parse(validade, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
-                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaCod);
+                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaService.gerarCodigoLinhaCategoria(linhaCategoriaCod));
                 produto.setLinhaCategoriaId(linhaCategoria);
 
                 this.save(ProdutoDTO.of(produto));
@@ -247,12 +247,12 @@ public class ProdutoService {
     }
 
     public void importCSVCategoriaPorFornecedor(MultipartFile importCategoriaPorFornecedor, Long id) {
-        List<List<String>> listaCSV = importCSV.importCSVPorFornecedor(importCategoriaPorFornecedor);
+        List<List<String>> listaCSV = importCSV.importCSV(importCategoriaPorFornecedor);
 
         for (List<String> strings : listaCSV) {
 
-            String codigo = strings.get(9);
-            String nome = strings.get(10);
+            String codigo = strings.get(8);
+            String nome = strings.get(9);
 
             Optional<Fornecedor> fornecedorExiste = Optional.ofNullable(fornecedorService.findFornecedorById(id));
             Optional<CategoriaProduto> categoriaProdutoExistente = categoriaProdutoService.findByCodigoOptional(categoriaProdutoService.gerarCodigoCategoria(id, codigo));
@@ -276,11 +276,11 @@ public class ProdutoService {
     }
 
     public void importCSVLinhaPorFornecedor(MultipartFile importLinhaPorFornecedor, Long id) {
-        List<List<String>> listCSV = importCSV.importCSVPorFornecedor(importLinhaPorFornecedor);
+        List<List<String>> listCSV = importCSV.importCSV(importLinhaPorFornecedor);
         for (List<String> strings : listCSV) {
-            String codigo = strings.get(7);
-            String nome = strings.get(8);
-            String categoria = strings.get(9);
+            String codigo = strings.get(6);
+            String nome = strings.get(7);
+            String categoria = strings.get(8);
 
             Optional<CategoriaProduto> categoriaProdutoExiste = categoriaProdutoService.findByCodigoOptional(categoriaProdutoService.gerarCodigoCategoria(id, categoria));
             Optional<LinhaCategoria> linhaCategoriaExistente = linhaCategoriaService.findByCodigoOptional(linhaCategoriaService.gerarCodigoLinhaCategoria(codigo));
@@ -307,59 +307,6 @@ public class ProdutoService {
             }
         }
     }
-
-    public void importCSVProdutoPorFornecedor(MultipartFile importProdutoPorFornecedor, Long id) {
-        List<List<String>> listaCSV = importCSV.importCSVPorFornecedor(importProdutoPorFornecedor);
-        for (List<String> strings : listaCSV) {
-            String codigo = strings.get(0);
-            String nome = strings.get(1);
-            String preco = strings.get(2).replaceAll("R\\$", "").replace(",", ".");
-            String unidadePorCaixa = strings.get(3);
-            String pesoPorUnidade = strings.get(4).replace(",", ".");
-            String unidadeMedidaPeso = strings.get(5);
-            String validade = strings.get(6).replaceAll("/", "-");
-            String linhaCategoriaCod = strings.get(7);
-
-
-            Optional<LinhaCategoria> linhaCategoriaExistente = linhaCategoriaService.findByCodigoOptional(linhaCategoriaService.gerarCodigoLinhaCategoria(linhaCategoriaCod));
-            Optional<Produto> produtoExiste = this.findByCodigoOptional(this.gerarCodigoProduto(codigo));
-            if (produtoExiste.isPresent() && linhaCategoriaExistente.isPresent()) {
-
-                Produto produto = produtoExiste.get();
-                produto.setCodigo(codigo);
-                produto.setNome(nome);
-                produto.setPreco(Double.parseDouble(preco));
-                produto.setUnidadePorCaixa(Integer.parseInt(unidadePorCaixa));
-                produto.setPesoPorUnidade(Double.parseDouble(pesoPorUnidade));
-                produto.setUnidadeMedidaPeso(unidadeMedidaPeso);
-                produto.setValidade(LocalDate.parse(validade, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaService.gerarCodigoLinhaCategoria(linhaCategoriaCod));
-                produto.setLinhaCategoriaId(linhaCategoria);
-
-                this.update(ProdutoDTO.of(produto), produtoExiste.get().getId());
-                LOGGER.info("Atualizando produto... id: [{}]", produto.getId());
-
-            } else {
-                Produto produto = new Produto();
-                produto.setCodigo(codigo);
-                produto.setNome(nome);
-                produto.setPreco(Double.parseDouble(preco));
-                produto.setUnidadePorCaixa(Integer.parseInt(unidadePorCaixa));
-                produto.setPesoPorUnidade(Double.parseDouble(pesoPorUnidade));
-                produto.setUnidadeMedidaPeso(unidadeMedidaPeso);
-                produto.setValidade(LocalDate.parse(validade, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-                LinhaCategoria linhaCategoria = linhaCategoriaService.findByCodigo(linhaCategoriaService.gerarCodigoLinhaCategoria(linhaCategoriaCod));
-                produto.setLinhaCategoriaId(linhaCategoria);
-
-                this.save(ProdutoDTO.of(produto));
-                LOGGER.info("Importando produto... id: [{}]", produto.getId());
-            }
-
-        }
-    }
-
 
     public void exportCSV(HttpServletResponse response) throws IOException, ParseException {
         String header = "Código do produto;Produto;Preço;Unidade por caixa;Peso por unidade;Validade;Código da linha da Categoria;" +

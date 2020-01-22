@@ -39,25 +39,4 @@ public class ImportCSV {
         return listaString;
      }
 
-    public List<List<String>> importCSVPorFornecedor(MultipartFile importCategoria) {
-        String linhaDoArquivo = "";
-        String quebraDeLinha = ";";
-        List<List<String>> listaString = new ArrayList<>();
-
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(importCategoria.getInputStream()))) {
-
-            linhaDoArquivo = leitor.readLine();
-
-            while ((linhaDoArquivo = leitor.readLine()) != null) {
-
-                String[] linhas= linhaDoArquivo.split(quebraDeLinha);
-                List<String> colunas = new ArrayList<>(Arrays.asList(linhas));
-                listaString.add(colunas);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Erro ao importar a CSV");
-        }
-        return listaString;
-    }
-
 }
