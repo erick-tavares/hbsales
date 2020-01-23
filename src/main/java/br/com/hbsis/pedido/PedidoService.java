@@ -126,7 +126,7 @@ public class PedidoService {
 
         for (Pedido pedidoCSVFornecedor : pedidosDoFornecedor) {
             Funcionario funcionario = funcionarioService.findFuncionarioById(pedidoCSVFornecedor.getFuncionarioId().getId());
-                    itemConferido = popularListaCSVPorFuncionario(pedidoCSVFornecedor.getItemList(), itemConferido, funcionario.getNome());
+            itemConferido = popularListaCSVPorFuncionario(pedidoCSVFornecedor.getItemList(), itemConferido, funcionario.getNome());
         }
 
         for (ItemPedidoModel itemModel : itemConferido) {
@@ -263,6 +263,12 @@ public class PedidoService {
         return listPedido;
     }
 
+    public List<Pedido> findByFuncionarioId(Funcionario funcionario) {
+        List<Pedido> listPedido = this.iPedidoRepository.findByFuncionarioId(funcionario);
+
+        return listPedido;
+    }
+
     public PedidoDTO update(PedidoDTO pedidoDTO, Long id) {
         Optional<Pedido> pedidoExistenteOptional = this.iPedidoRepository.findById(id);
 
@@ -382,4 +388,23 @@ public class PedidoService {
         }
         throw new IllegalArgumentException("Pedido não validado " + responseInvoice.getStatusCodeValue());
     }
+
+    public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {
+        Optional<Funcionario> funcionario = Optional.ofNullable(funcionarioService.findFuncionarioById(id));
+        List<PedidoDTO> pedidoDTO = new ArrayList<>();
+
+        if (funcionario.isPresent()) {
+            List<Pedido> pedidoDoFuncionario = this.iPedidoRepository.findByFuncionarioId(funcionario.get());
+
+            for (Pedido pedido : pedidoDoFuncionario) {
+                if (pedido.getStatus().equalsIgnoreCase("ATIVO") || (pedido.getStatus().equalsIgnoreCase("RETIRADO"))) {
+                    pedidoDTO.add(PedidoDTO.of(pedido));
+
+                }
+            }
+            return pedidoDTO;
+        }
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
 }

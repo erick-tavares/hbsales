@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping ("pedidos")
@@ -43,6 +45,13 @@ public class PedidoRest {
         LOGGER.info("Exportando CSV");
 
         this.pedidoService.exportCSVPorPeriodoPorFornecedor(response, id);
+    }
+
+    @GetMapping("/view/{funcionarioId}")
+    public List<PedidoDTO> visualizarPedido(@PathVariable("funcionarioId") Long id) {
+        LOGGER.info("Visualizando pedidos do funcionario");
+
+        return this.pedidoService.visualizarPedidoDoFuncionario(id);
     }
 
     @GetMapping("/export-produtos-funcionario/{fornecedorId}")
