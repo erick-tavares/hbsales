@@ -263,11 +263,6 @@ public class PedidoService {
         return listPedido;
     }
 
-    public List<Pedido> findByFuncionarioId(Funcionario funcionario) {
-        List<Pedido> listPedido = this.iPedidoRepository.findByFuncionarioId(funcionario);
-
-        return listPedido;
-    }
 
     public PedidoDTO update(PedidoDTO pedidoDTO, Long id) {
         Optional<Pedido> pedidoExistenteOptional = this.iPedidoRepository.findById(id);
@@ -389,12 +384,40 @@ public class PedidoService {
         throw new IllegalArgumentException("Pedido não validado " + responseInvoice.getStatusCodeValue());
     }
 
+    public PedidoDTO cancelarPedido(Long id) {
+        Optional<Pedido> pedidoExistente = this.iPedidoRepository.findById(id);
+
+
+        if (pedidoExistente.isPresent()) {
+            Pedido pedido = pedidoExistente.get();
+            if (pedido.getStatus().equalsIgnoreCase(StatusPedido.ATIVO.getDescricao())) {
+                LocalDate dataDoCancelamento = LocalDate.now();
+                if ((dataDoCancelamento.isAfter(pedido.getPeriodoVendasId().getInicioVendas())) && (dataDoCancelamento.isBefore(pedido.getPeriodoVendasId().getFimVendas()))) {
+                    LOGGER.info("Cancelando pedido... id: [{}]", pedido.getId());
+
+                    pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
+
+                    this.update(PedidoDTO.of(pedido), pedidoExistente.get().getId());
+                    return PedidoDTO.of(pedido);
+                }
+                throw new IllegalArgumentException("O pedido está fora do período de vendas");
+
+            } else {
+                LOGGER.info("Pedido... id: [{}] não está ativo", pedido.getId());
+                throw new IllegalArgumentException("Somente pedidos ativos podem ser cancelados");
+
+            }
+        }
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
     public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {
-        Optional<Funcionario> funcionario = Optional.ofNullable(funcionarioService.findFuncionarioById(id));
+        Optional<Funcionario> funcionarioExistente = Optional.ofNullable(funcionarioService.findFuncionarioById(id));
         List<PedidoDTO> pedidoDTO = new ArrayList<>();
 
-        if (funcionario.isPresent()) {
-            List<Pedido> pedidoDoFuncionario = this.iPedidoRepository.findByFuncionarioId(funcionario.get());
+        if (funcionarioExistente.isPresent()) {
+            List<Pedido> pedidoDoFuncionario = this.iPedidoRepository.findByFuncionarioId(funcionarioExistente.get());
+            LOGGER.info("Visualizando pedidos do funcionario [{}]", funcionarioExistente.get().getNome());
 
             for (Pedido pedido : pedidoDoFuncionario) {
                 if (pedido.getStatus().equalsIgnoreCase("ATIVO") || (pedido.getStatus().equalsIgnoreCase("RETIRADO"))) {

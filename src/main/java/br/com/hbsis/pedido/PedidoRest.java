@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -49,7 +48,7 @@ public class PedidoRest {
 
     @GetMapping("/view/{funcionarioId}")
     public List<PedidoDTO> visualizarPedido(@PathVariable("funcionarioId") Long id) {
-        LOGGER.info("Visualizando pedidos do funcionario");
+        LOGGER.info("Visualizando pedidos do funcionario de ID: {}", id);
 
         return this.pedidoService.visualizarPedidoDoFuncionario(id);
     }
@@ -59,6 +58,14 @@ public class PedidoRest {
         LOGGER.info("Exportando CSV");
 
         this.pedidoService.exportCSVPorFornecedorPorFuncionario(response, id);
+    }
+
+    @PutMapping("cancelar/{id}")
+    public PedidoDTO cancelar(@PathVariable("id") Long id, @RequestBody PedidoDTO pedidoDTO) {
+        LOGGER.info("Cancelando pedido de ID: {}", id);
+        LOGGER.debug("Payload: {}", pedidoDTO);
+
+        return this.pedidoService.cancelarPedido(id);
     }
 
     @PutMapping("/{id}")
