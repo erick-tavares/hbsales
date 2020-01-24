@@ -26,8 +26,8 @@ public class PeriodoVendasService {
 
     public PeriodoVendasDTO save(PeriodoVendasDTO periodoVendasDTO) {
         Fornecedor fornecedorDoPeriodo = fornecedorService.findFornecedorById(periodoVendasDTO.getFornecedorId());
-     //   this.validate(periodoVendasDTO);
-     //   this.validarPeriodo(periodoVendasDTO, fornecedorDoPeriodo);
+        this.validate(periodoVendasDTO);
+        this.validarPeriodo(periodoVendasDTO, fornecedorDoPeriodo);
 
         LOGGER.info("Salvando período de vendas");
         LOGGER.debug("Período: {}", periodoVendasDTO);

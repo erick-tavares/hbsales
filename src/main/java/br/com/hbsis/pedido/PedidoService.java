@@ -337,8 +337,7 @@ public class PedidoService {
             Optional<Produto> produtoExistente = Optional.ofNullable(produtoService.findProdutoById(item.getProdutoId()));
             if (produtoExistente.isPresent()) {
 
-                if (produtoExistente.get().getLinhaCategoriaId().getCategoriaId().getFornecedorId().getId()
-                        .equals(fornecedor.getId())) {
+                if (produtoExistente.get().getLinhaCategoriaId().getCategoriaId().getFornecedorId().getId().equals(fornecedor.getId())) {
 
                     LOGGER.info("Produto existente para este fornecedor");
                     return true;
@@ -412,6 +411,7 @@ public class PedidoService {
         }
     }
 
+
     public PedidoDTO cancelarPedido(Long id) {
         Pedido pedido = validarStatus(id);
         pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
@@ -420,15 +420,25 @@ public class PedidoService {
     }
 
     public PedidoDTO retirarPedido(Long id) {
-        Pedido pedido = validarStatus(id);
-        if (pedido.getPeriodoVendasId().getRetiradaPedido().equals(LocalDate.now())) {
-            pedido.setStatus(StatusPedido.RETIRADO.getDescricao().toUpperCase());
-            iPedidoRepository.save(pedido);
-            return PedidoDTO.of(pedido);
+        Optional<Pedido> pedidoOptional = this.iPedidoRepository.findById(id);
+
+        if (pedidoOptional.isPresent()) {
+            Pedido pedidoExistente = pedidoOptional.get();
+            if (pedidoExistente.getStatus().equalsIgnoreCase(StatusPedido.ATIVO.getDescricao())) {
+                if (pedidoExistente.getPeriodoVendasId().getRetiradaPedido().equals(LocalDate.now())) {
+                    pedidoExistente.setStatus(StatusPedido.RETIRADO.getDescricao().toUpperCase());
+                    iPedidoRepository.save(pedidoExistente);
+                    return PedidoDTO.of(pedidoExistente);
+                } else {
+                    throw new IllegalArgumentException("O pedido não pode ser retirado antes da data prevista");
+                }
+            } else {
+                LOGGER.info("Pedido... id: [{}] não está ativo", id);
+                throw new IllegalArgumentException("Somente pedidos ativos podem ser alterados");
+            }
         } else {
-            LOGGER.info("O pedido não pode ser retirado anters da data prevista");
+            throw new IllegalArgumentException(String.format("ID %s não existe", id));
         }
-        throw new IllegalArgumentException("Data de retirada não compativel");
     }
 
     public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {
@@ -442,7 +452,6 @@ public class PedidoService {
             for (Pedido pedido : pedidoDoFuncionario) {
                 if (pedido.getStatus().equalsIgnoreCase("ATIVO") || (pedido.getStatus().equalsIgnoreCase("RETIRADO"))) {
                     pedidoDTO.add(PedidoDTO.of(pedido));
-
                 }
             }
             return pedidoDTO;
