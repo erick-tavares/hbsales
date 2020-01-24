@@ -412,31 +412,40 @@ public class PedidoService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public PedidoDTO cancelarPedido(Long id) {
-        Optional<Pedido> pedidoExistente = this.iPedidoRepository.findById(id);
+    public Pedido validarStatus(Long id) {
+        Optional<Pedido> pedidoOptional = this.iPedidoRepository.findById(id);
 
-
-        if (pedidoExistente.isPresent()) {
-            Pedido pedido = pedidoExistente.get();
-            if (pedido.getStatus().equalsIgnoreCase(StatusPedido.ATIVO.getDescricao())) {
-                LocalDate dataDoCancelamento = LocalDate.now();
-                if ((dataDoCancelamento.isAfter(pedido.getPeriodoVendasId().getInicioVendas())) && (dataDoCancelamento.isBefore(pedido.getPeriodoVendasId().getFimVendas()))) {
-                    LOGGER.info("Cancelando pedido... id: [{}]", pedido.getId());
-
-                    pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
-
-                    this.update(PedidoDTO.of(pedido), pedidoExistente.get().getId());
-                    return PedidoDTO.of(pedido);
+        if (pedidoOptional.isPresent()) {
+            Pedido pedidoExistente = pedidoOptional.get();
+            if (pedidoExistente.getStatus().equalsIgnoreCase(StatusPedido.ATIVO.getDescricao())) {
+                LocalDate dataAtual = LocalDate.now();
+                if ((dataAtual.isAfter(pedidoExistente.getPeriodoVendasId().getInicioVendas())) &&
+                        (dataAtual.isBefore(pedidoExistente.getPeriodoVendasId().getFimVendas()))) {
+                    return pedidoExistente;
+                } else {
+                    throw new IllegalArgumentException("O pedido está fora do período de vendas");
                 }
-                throw new IllegalArgumentException("O pedido está fora do período de vendas");
-
             } else {
-                LOGGER.info("Pedido... id: [{}] não está ativo", pedido.getId());
-                throw new IllegalArgumentException("Somente pedidos ativos podem ser cancelados");
-
+                LOGGER.info("Pedido... id: [{}] não está ativo", id);
+                throw new IllegalArgumentException("Somente pedidos ativos podem ser alterados");
             }
+        } else {
+            throw new IllegalArgumentException(String.format("ID %s não existe", id));
         }
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
+    public PedidoDTO cancelarPedido(Long id) {
+            Pedido pedido = validarStatus(id);
+            pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
+            iPedidoRepository.save(pedido);
+            return PedidoDTO.of(pedido);
+    }
+
+    public PedidoDTO retirarPedido(Long id) {
+        Pedido pedido = validarStatus(id);
+        pedido.setStatus(StatusPedido.RETIRADO.getDescricao().toUpperCase());
+        iPedidoRepository.save(pedido);
+        return PedidoDTO.of(pedido);
     }
 
     public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {

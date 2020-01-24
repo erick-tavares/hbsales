@@ -59,9 +59,16 @@ public class PedidoRest {
 
         this.pedidoService.exportCSVPorFornecedorPorFuncionario(response, id);
     }
+    @PutMapping("retirar/{id}")
+    public PedidoDTO retirarPedido(@PathVariable("id") Long id, @RequestBody PedidoDTO pedidoDTO) {
+        LOGGER.info("Retirando pedido de ID: {}", id);
+        LOGGER.debug("Payload: {}", pedidoDTO);
+
+        return this.pedidoService.retirarPedido(id);
+    }
 
     @PutMapping("cancelar/{id}")
-    public PedidoDTO cancelar(@PathVariable("id") Long id, @RequestBody PedidoDTO pedidoDTO) {
+    public PedidoDTO cancelarPedido(@PathVariable("id") Long id, @RequestBody PedidoDTO pedidoDTO) {
         LOGGER.info("Cancelando pedido de ID: {}", id);
         LOGGER.debug("Payload: {}", pedidoDTO);
 

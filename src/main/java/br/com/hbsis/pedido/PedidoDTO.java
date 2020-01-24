@@ -29,6 +29,10 @@ public class PedidoDTO {
         this.fornecedorId = fornecedorId;
     }
 
+    public PedidoDTO() {
+
+    }
+
     @Override
     public String toString() {
         return "PedidoDTO{" +
