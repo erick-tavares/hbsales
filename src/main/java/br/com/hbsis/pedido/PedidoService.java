@@ -272,7 +272,7 @@ public class PedidoService {
 
             this.validarPeriodoDoFornecedor(periodoVendasService.findById(pedidoDTO.getPeriodoVendasId()), fornecedorService.findById(pedidoDTO.getFornecedorId()));
             this.validarProdutoDoFornecedor(pedidoDTO.getItemDTOList(), fornecedorService.findFornecedorById(pedidoDTO.getFornecedorId()));
-            this.validarEdicaoPedido(pedidoDTO, id);
+            this.validarStatus(id);
 
             LOGGER.info("Atualizando pedido... id: [{}]", pedidoExistente.getId());
             LOGGER.debug("Payload: {}", pedidoDTO);
@@ -285,9 +285,9 @@ public class PedidoService {
             pedidoExistente.setPeriodoVendasId(periodoVendasService.findPeriodoVendasById(pedidoDTO.getPeriodoVendasId()));
             pedidoExistente.setFornecedorId(fornecedorService.findFornecedorById(pedidoDTO.getFornecedorId()));
 
-            pedidoExistente = this.iPedidoRepository.save(pedidoExistente);
 
-            pedidoExistente.setItemList(preencherListaItens(pedidoDTO.getItemDTOList(), pedidoExistente));
+            pedidoExistente.updateItens(this.preencherListaItens(pedidoDTO.getItemDTOList(), pedidoExistente));
+            pedidoExistente = this.iPedidoRepository.save(pedidoExistente);
 
             return PedidoDTO.of(pedidoExistente);
         }
@@ -390,28 +390,6 @@ public class PedidoService {
         throw new IllegalArgumentException("Pedido não validado " + responseInvoice.getStatusCodeValue());
     }
 
-    public Pedido validarEdicaoPedido(PedidoDTO pedidoDTO, Long id) {
-        Optional<Pedido> pedidoExistente = this.iPedidoRepository.findById(id);
-
-        if (pedidoExistente.isPresent()) {
-            Pedido pedido = pedidoExistente.get();
-
-            if (pedido.getStatus().equalsIgnoreCase(StatusPedido.ATIVO.getDescricao())) {
-                LocalDate dataDaEdicao = LocalDate.now();
-                if ((dataDaEdicao.isAfter(pedido.getPeriodoVendasId().getInicioVendas())) && (dataDaEdicao.isBefore(pedido.getPeriodoVendasId().getFimVendas()))) {
-
-
-                    return pedido;
-                }
-                throw new IllegalArgumentException("O pedido está fora do período de vendas");
-            } else {
-                LOGGER.info("Pedido... id: [{}] não está ativo", pedido.getId());
-                throw new IllegalArgumentException("Somente pedidos ativos podem ser alterados");
-            }
-        }
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
-    }
-
     public Pedido validarStatus(Long id) {
         Optional<Pedido> pedidoOptional = this.iPedidoRepository.findById(id);
 
@@ -435,17 +413,22 @@ public class PedidoService {
     }
 
     public PedidoDTO cancelarPedido(Long id) {
-            Pedido pedido = validarStatus(id);
-            pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
-            iPedidoRepository.save(pedido);
-            return PedidoDTO.of(pedido);
+        Pedido pedido = validarStatus(id);
+        pedido.setStatus(StatusPedido.CANCELADO.getDescricao().toUpperCase());
+        iPedidoRepository.save(pedido);
+        return PedidoDTO.of(pedido);
     }
 
     public PedidoDTO retirarPedido(Long id) {
         Pedido pedido = validarStatus(id);
-        pedido.setStatus(StatusPedido.RETIRADO.getDescricao().toUpperCase());
-        iPedidoRepository.save(pedido);
-        return PedidoDTO.of(pedido);
+        if (pedido.getPeriodoVendasId().getRetiradaPedido().equals(LocalDate.now())) {
+            pedido.setStatus(StatusPedido.RETIRADO.getDescricao().toUpperCase());
+            iPedidoRepository.save(pedido);
+            return PedidoDTO.of(pedido);
+        } else {
+            LOGGER.info("O pedido não pode ser retirado anters da data prevista");
+        }
+        throw new IllegalArgumentException("Data de retirada não compativel");
     }
 
     public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {

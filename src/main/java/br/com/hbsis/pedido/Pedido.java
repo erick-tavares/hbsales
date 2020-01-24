@@ -115,4 +115,9 @@ public class Pedido {
     public void setItemList(List<ItemPedido> itemList) {
         this.itemList = itemList;
     }
+
+    public void updateItens(List<ItemPedido> itemPedido) {
+        this.itemList.clear();
+        this.itemList.addAll(itemPedido);
+    }
 }
