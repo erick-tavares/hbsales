@@ -1,6 +1,5 @@
 package br.com.hbsis.exportimportcsv;
 
-import br.com.hbsis.funcionario.Funcionario;
 import br.com.hbsis.produto.Produto;
 
 public class ItemPedidoModel {

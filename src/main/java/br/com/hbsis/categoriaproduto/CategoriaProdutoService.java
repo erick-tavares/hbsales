@@ -43,16 +43,14 @@ public class CategoriaProdutoService {
             FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
             fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
-            String codigoGerado = "";
-            codigoGerado = StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
+            String codigoGerado =  StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
 
             codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado;
         } else {
             FornecedorDTO fornecedorDTO = fornecedorService.findById(idFornecedor);
             fornecedorCnpj = fornecedorDTO.getCnpj().substring(10, 14);
 
-            String codigoGerado = codigoDoUsuario.substring(7, 10);
-            codigoGerado = StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
+            String codigoGerado  = StringUtils.leftPad(codigoDoUsuario.toUpperCase(), 3, "0");
 
             codigoCategoria = "CAT" + fornecedorCnpj + codigoGerado.substring(7, 10);
         }

@@ -113,12 +113,11 @@ public class FuncionarioService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         HttpEntity<FuncionarioDTO> httpEntity = new HttpEntity<>(funcionarioDTO, headers);
 
-        ResponseEntity<EmployeeDTO>
-                responseEmployee = restTemplate.exchange("http://10.2.54.25:9999/api/employees", HttpMethod.POST, httpEntity, EmployeeDTO.class);
+        ResponseEntity<EmployeeDTO> responseEmployee = restTemplate.exchange("http://10.2.54.25:9999/api/employees", HttpMethod.POST, httpEntity, EmployeeDTO.class);
         funcionarioDTO.setUuid((Objects.requireNonNull(responseEmployee.getBody())).getEmployeeUuid());
         funcionarioDTO.setNome((Objects.requireNonNull(responseEmployee.getBody())).getEmployeeName());
 
-        LOGGER.info("Validando funcionário em HBEmployee " + responseEmployee.getBody().getEmployeeUuid());
+        LOGGER.info("Validando funcionário em HBEmployee " + responseEmployee.getBody().getEmployeeName());
     }
 
 }

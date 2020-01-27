@@ -152,7 +152,7 @@ public class PeriodoVendasService {
             LOGGER.debug("Periodo Existente: {}", periodoVendasExistente);
 
             if (periodoVendasExistente.getFimVendas().isBefore(LocalDate.now())) {
-                throw new IllegalArgumentException(String.format("Período de vendas já expirou"));
+                throw new IllegalArgumentException("Período de vendas já expirou");
             } else {
                 periodoVendasExistente.setFimVendas(periodoVendasDTO.getFimVendas());
                 periodoVendasExistente.setInicioVendas(periodoVendasDTO.getInicioVendas());
