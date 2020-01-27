@@ -123,7 +123,7 @@ public class PeriodoVendasService {
                     if ((periodoVendasDTO.getInicioVendas().isBefore(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isAfter(periodo.getFimVendas())) {
                         throw new IllegalArgumentException("A data de período já existe entre outro período");
                     }
-                    if (periodoVendasDTO.getRetiradaPedido().isBefore(periodo.getFimVendas())) {
+                    if (periodoVendasDTO.getRetiradaPedido().isBefore(periodoVendasDTO.getFimVendas())) {
                         throw new IllegalArgumentException("A data de retirada do pedido é inválida");
                     }
                     if ((periodoVendasDTO.getInicioVendas().isEqual(periodo.getInicioVendas())) && periodoVendasDTO.getFimVendas().isEqual(periodo.getFimVendas())) {
