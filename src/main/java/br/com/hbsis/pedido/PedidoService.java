@@ -1,5 +1,6 @@
 package br.com.hbsis.pedido;
 
+import br.com.hbsis.email.EmailService;
 import br.com.hbsis.exportimportcsv.ExportCSV;
 import br.com.hbsis.exportimportcsv.ItemPedidoModel;
 import br.com.hbsis.fornecedor.Fornecedor;
@@ -40,15 +41,17 @@ public class PedidoService {
     private final FuncionarioService funcionarioService;
     private final FornecedorService fornecedorService;
     private final ExportCSV exportCSV;
+    private final EmailService emailService;
 
     public PedidoService(IPedidoRepository iPedidoRepository, ProdutoService produtoService, PeriodoVendasService periodoVendasService,
-                         FuncionarioService funcionarioService, FornecedorService fornecedorService, ExportCSV exportCSV) {
+                         FuncionarioService funcionarioService, FornecedorService fornecedorService, ExportCSV exportCSV, EmailService emailService) {
         this.iPedidoRepository = iPedidoRepository;
         this.produtoService = produtoService;
         this.periodoVendasService = periodoVendasService;
         this.funcionarioService = funcionarioService;
         this.fornecedorService = fornecedorService;
         this.exportCSV = exportCSV;
+        this.emailService = emailService;
     }
 
     public PedidoDTO save(PedidoDTO pedidoDTO) {
@@ -75,8 +78,10 @@ public class PedidoService {
 
         pedido.setItemList(preencherListaItens(pedidoDTO.getItemDTOList(), pedido));
 
-        this.validarInvoice(pedido, funcionarioService.findById(pedidoDTO.getFuncionarioId()), fornecedorService.findById(pedidoDTO.getFornecedorId()));
+       // this.validarInvoice(pedido, funcionarioService.findById(pedidoDTO.getFuncionarioId()), fornecedorService.findById(pedidoDTO.getFornecedorId()));
         pedido = this.iPedidoRepository.save(pedido);
+        emailService.sendSimpleMessage(pedidoDTO.getFuncionarioId(),pedidoDTO.getPeriodoVendasId());
+
 
         return PedidoDTO.of(pedido);
 
