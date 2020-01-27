@@ -336,10 +336,9 @@ public class PedidoService {
         LOGGER.info("Validando produto do fornecedor");
 
         for (ItemPedidoDTO item : itemDTO) {
-            Optional<Produto> produtoExistente = Optional.ofNullable(produtoService.findProdutoById(item.getProdutoId()));
-            Produto produto = produtoExistente.get();
+            Produto produtoExistente = produtoService.findProdutoById(item.getProdutoId());
 
-            if (produto.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getId().equals(fornecedor.getId())) {
+            if (produtoExistente.getLinhaCategoriaId().getCategoriaId().getFornecedorId().getId().equals(fornecedor.getId())) {
 
                 LOGGER.info("Produto existente para este fornecedor");
                 return true;
@@ -351,10 +350,9 @@ public class PedidoService {
     public boolean validarPeriodoDoFornecedor(PeriodoVendasDTO periodoVendasDTO, FornecedorDTO fornecedorDTO) {
         LOGGER.info("Validando período de vendas do pedido");
 
-        Optional<PeriodoVendas> periodoExistente = Optional.ofNullable(periodoVendasService.findPeriodoVendasById(periodoVendasDTO.getId()));
-        PeriodoVendas periodoVendas = periodoExistente.get();
+        PeriodoVendas periodoExistente = periodoVendasService.findPeriodoVendasById(periodoVendasDTO.getId());
 
-        List<PeriodoVendas> periodoLista = periodoVendasService.findByFornecedor(periodoVendas.getFornecedorId());
+        List<PeriodoVendas> periodoLista = periodoVendasService.findByFornecedor(periodoExistente.getFornecedorId());
         for (PeriodoVendas periodo : periodoLista) {
             if (periodo.getFornecedorId().getId().equals(fornecedorDTO.getId())) {
 
@@ -440,12 +438,11 @@ public class PedidoService {
     }
 
     public List<PedidoDTO> visualizarPedidoDoFuncionario(Long id) {
-        Optional<Funcionario> funcionarioExistente = Optional.ofNullable(funcionarioService.findFuncionarioById(id));
+        Funcionario funcionarioExistente = funcionarioService.findFuncionarioById(id);
         List<PedidoDTO> pedidoDTO = new ArrayList<>();
-        Funcionario funcionario = funcionarioExistente.get();
 
-            List<Pedido> pedidoDoFuncionario = this.iPedidoRepository.findByFuncionarioId(funcionario);
-            LOGGER.info("Visualizando pedidos do funcionario [{}]", funcionario.getNome());
+            List<Pedido> pedidoDoFuncionario = this.iPedidoRepository.findByFuncionarioId(funcionarioExistente);
+            LOGGER.info("Visualizando pedidos do funcionario [{}]", funcionarioExistente.getNome());
 
             for (Pedido pedido : pedidoDoFuncionario) {
                 if (pedido.getStatus().equalsIgnoreCase("ATIVO") || (pedido.getStatus().equalsIgnoreCase("RETIRADO"))) {

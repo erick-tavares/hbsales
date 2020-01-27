@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 @Component
     public class EmailService {
@@ -33,17 +32,13 @@ import java.util.Optional;
 
     public void sendSimpleMessage(Long funcionarioId, Long periodoVendasId) {
 
-        Optional<Funcionario> funcionarioExistente = Optional.ofNullable(funcionarioService.findFuncionarioById(funcionarioId));
-        Optional<PeriodoVendas> periodoExistente = Optional.ofNullable(periodoVendasService.findPeriodoVendasById(periodoVendasId));
-
-        if (funcionarioExistente.isPresent() && periodoExistente.isPresent()){
-            Funcionario funcionario = funcionarioExistente.get();
-            PeriodoVendas periodoVendas = periodoExistente.get();
+        Funcionario funcionarioExistente = funcionarioService.findFuncionarioById(funcionarioId);
+       PeriodoVendas periodoExistente = periodoVendasService.findPeriodoVendasById(periodoVendasId);
 
         SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(funcionario.getEmail());
+            message.setTo(funcionarioExistente.getEmail());
             message.setSubject("Confirmação de Pedido de Vendas");
-            message.setText(corpoDoEmail(funcionario.getId(), periodoVendas.getId()));
+            message.setText(corpoDoEmail(funcionarioExistente.getId(), periodoExistente.getId()));
 
             try {
                 emailSender.send(message);
@@ -52,7 +47,6 @@ import java.util.Optional;
                 LOGGER.info ("Erro ao enviar email.");
             }
         }
-    }
 
     public String corpoDoEmail (Long funcionarioId, Long periodoVendasId){
             Funcionario funcionario = funcionarioService.findFuncionarioById(funcionarioId);
