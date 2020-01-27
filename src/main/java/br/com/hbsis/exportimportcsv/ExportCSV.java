@@ -11,7 +11,7 @@ import java.text.ParseException;
 @Component
 public class ExportCSV {
 
-    public PrintWriter exportarCSV (HttpServletResponse response, String header) throws IOException {
+    public void exportarCSV (HttpServletResponse response, String header) throws IOException {
         String arquivoCSV = "arquivo.csv";
         response.setContentType("text/csv");
 
@@ -21,7 +21,6 @@ public class ExportCSV {
         PrintWriter printWriter = response.getWriter();
 
         printWriter.println(header);
-        return  printWriter;
     }
 
     public String mask (String cnpj) throws ParseException {
